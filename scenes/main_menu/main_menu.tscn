@@ -2,20 +2,26 @@
 
 [ext_resource type="Script" uid="uid://bjvn2wri7jg8w" path="res://scenes/main_menu/exit_button.gd" id="1_eiy7p"]
 [ext_resource type="Script" uid="uid://46le2ggf6bpf" path="res://scenes/main_menu/new_game_button.gd" id="1_h7a2f"]
-[ext_resource type="Texture2D" uid="uid://ne62o4t5vdc5" path="res://scenes/main_menu/art/characters.png" id="6"]
+[ext_resource type="Texture2D" path="res://scenes/main_menu/art/hardlife.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://cdnnk0j8ym21r" path="res://scenes/main_menu/art/new_game.png" id="7_newgame"]
+[ext_resource type="Texture2D" uid="uid://cwl7140un1of7" path="res://scenes/main_menu/art/continue.png" id="8_continue"]
+[ext_resource type="Texture2D" uid="uid://xqbaivx5dxm7" path="res://scenes/main_menu/art/settings.png" id="9_settings"]
+[ext_resource type="Texture2D" uid="uid://j6my7o6kv8pm" path="res://scenes/main_menu/art/exit.png" id="10_exit"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 content_margin_left = 20.0
 content_margin_top = 20.0
 content_margin_right = 20.0
 content_margin_bottom = 20.0
-bg_color = Color(0.16862746, 0.1764706, 0.25882354, 1)
+bg_color = Color(1, 1, 1, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_dgfsc"]
 font_size = 80
+font_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_eiqrc"]
 font_size = 25
+font_color = Color(0, 0, 0, 1)
 
 [node name="MainMenu" type="PanelContainer" unique_id=1527488736]
 anchors_preset = 15
@@ -46,20 +52,36 @@ alignment = 1
 
 [node name="New Game" type="Button" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1322548092]
 layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "New Game"
+tooltip_text = "New Game"
+theme_override_colors/icon_pressed_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/icon_hover_color = Color(0.75, 0.85, 1, 1)
+icon = ExtResource("7_newgame")
+flat = true
 script = ExtResource("1_h7a2f")
 
 [node name="Continue" type="Button" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=957499260]
 layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "Continue"
+tooltip_text = "Continue"
+theme_override_colors/icon_pressed_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/icon_hover_color = Color(0.75, 0.85, 1, 1)
+icon = ExtResource("8_continue")
+flat = true
+
+[node name="Settings" type="Button" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1085676365]
+layout_mode = 2
+tooltip_text = "Settings"
+theme_override_colors/icon_pressed_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/icon_hover_color = Color(0.75, 0.85, 1, 1)
+icon = ExtResource("9_settings")
+flat = true
 
 [node name="Exit" type="Button" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=676077620]
 layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "Exit
-"
+tooltip_text = "Exit"
+theme_override_colors/icon_pressed_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/icon_hover_color = Color(0.75, 0.85, 1, 1)
+icon = ExtResource("10_exit")
+flat = true
 script = ExtResource("1_eiy7p")
 
 [node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer" unique_id=490830478]
@@ -74,10 +96,13 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 0
 
-[node name="Characters" type="TextureRect" parent="HBoxContainer/CenterContainer" unique_id=247256464]
+[node name="HardLife" type="TextureRect" parent="HBoxContainer/CenterContainer" unique_id=247256464]
+texture_filter = 1
+custom_minimum_size = Vector2(560, 560)
 layout_mode = 2
 texture = ExtResource("6")
-stretch_mode = 3
+expand_mode = 1
+stretch_mode = 5
 
-[connection signal="pressed" from="HBoxContainer/VBoxContainer/VBoxContainer/Exit" to="HBoxContainer/VBoxContainer/VBoxContainer/Exit" method="_on_pressed"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/VBoxContainer/New Game" to="HBoxContainer/VBoxContainer/VBoxContainer/New Game" method="_on_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/VBoxContainer/Exit" to="HBoxContainer/VBoxContainer/VBoxContainer/Exit" method="_on_pressed"]

@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://scenes/backstory/art/dialoguebox_mask.png" id="4_boxmask"]
 [ext_resource type="Shader" path="res://scenes/backstory/box_blur.gdshader" id="5_blur"]
 [ext_resource type="AudioStream" path="res://scenes/backstory/music/introsong.wav" id="6_music"]
+[ext_resource type="Script" path="res://scenes/backstory/backstory.gd" id="7_root"]
 [ext_resource type="Script" uid="uid://c6x6b6hdkfskm" path="res://scenes/backstory/backstory_dialogue.gd" id="1_bv4ud"]
 [ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/nodes/dialogue_label/dialogue_label.tscn" id="2_dlabel"]
 
@@ -41,6 +42,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("7_root")
+next_scene = "res://scenes/home/catroom/catroom.tscn"
 
 [node name="Background" type="Panel" parent="." unique_id=513478590]
 layout_mode = 1
