@@ -1,0 +1,14 @@
+~ start
+Narrator: You wake up and cannot feel your limbs [#art=black]
+Narrator: You lie still in an attempt to ground yourself
+You: *silence*
+Narrator: It seems as though you're unable to talk
+You: *meow*
+Narrator: Oh? How interesting. Open your second eyelids, and look behind you.
+[next=1.5] [#art=catlookdownfade]
+Narrator: You successfully force your eyes open and suddenly, you can see! [#art=catlookdown]
+You: *meow*
+Narrator: As for why you're unable to speak, the answer lies behind you...
+Narrator: You slowly turn your head backwards. Your neck feels far more flexible than it should be. [#art=lookingatwall]
+Narrator: You see a cat before you. [#art=kittymirror]
+=> END

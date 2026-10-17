@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://h3ajmjxo7m3t"
+path="res://.godot/imported/backstory.dialogue-c15b84de21428804e904d4e13a4577b3.tres"
+
+[deps]
+
+source_file="res://scenes/backstory/backstory.dialogue"
+dest_files=["res://.godot/imported/backstory.dialogue-c15b84de21428804e904d4e13a4577b3.tres"]
+
+[params]
+
+defaults=true
