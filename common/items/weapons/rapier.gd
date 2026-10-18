@@ -4,6 +4,7 @@ extends Item
 func _init():
 	display_name = "Rapier"
 	rarity = Rarity.EPIC
+	icon = preload("res://common/items/weapons/art/rapier.png")
 	description = "Light enough to dance with."
 	slot = Slot.WEAPON
 	attack_bonus = 3

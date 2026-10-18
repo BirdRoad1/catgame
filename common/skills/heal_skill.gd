@@ -6,8 +6,8 @@ var amount: int
 var message: String
 
 
-func _init(p_display_name: String, p_amount: int, p_weight := 1.0, p_message := "The %s heals %d HP!") -> void:
-	super(p_display_name, p_weight)
+func _init(p_display_name: String, p_amount: int, p_weight := 1.0, p_message := "The %s heals %d HP!", p_sp_cost := 0) -> void:
+	super(p_display_name, p_weight, p_sp_cost)
 	amount = p_amount
 	message = p_message
 

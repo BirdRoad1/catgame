@@ -4,6 +4,7 @@ extends Item
 func _init():
 	display_name = "Leather Armor"
 	rarity = Rarity.COMMON
+	icon = preload("res://common/items/armor/art/leather_armor.png")
 	description = "A little stiff, but it helps."
 	slot = Slot.ARMOR
 	max_hp_bonus = 1

@@ -7,6 +7,9 @@ const DungeonScript = preload("res://scenes/dungeon/dungeon.gd")
 const Dungeon = DungeonScript.Dungeon
 const MonsterSpawner = preload("res://scenes/dungeon/monster_spawner.gd")
 const BattleScene = preload("res://scenes/battle/battle.tscn")
+## Plays the first time the boss is beaten
+const COURTSHIP_SCENE := "res://scenes/courtship/courtship.tscn"
+const PassOutScene = preload("res://scenes/pass_out/pass_out.tscn")
 
 signal battle_ended
 ## The player attacked, tried to flee, etc. Each one costs a dungeon turn
@@ -87,9 +90,30 @@ func _build_chest_prompt(chest: Chest) -> Control:
 	leave_btn.text = "Leave"
 	buttons.add_child(leave_btn)
 
+	# only offered if the player has a Chest Search in their bag
+	if Game.player.inventory.find_in_bag(ChestSearch) != -1:
+		var search_btn := Button.new()
+		search_btn.text = "Use Chest Search"
+		buttons.add_child(search_btn)
+		search_btn.pressed.connect(_search_chest.bind(chest, art, label, search_btn))
+
 	open_btn.pressed.connect(_open_chest.bind(chest, art, label, buttons))
 	leave_btn.pressed.connect(_close_chest)
 	return prompt
+
+
+## Uses up a Chest Search to reveal whether the chest is a mimic
+func _search_chest(chest: Chest, art: TextureRect, label: Label, search_btn: Button) -> void:
+	var index := Game.player.inventory.find_in_bag(ChestSearch)
+	if index == -1:
+		return
+	Game.player.inventory.remove_at(index)
+	search_btn.queue_free()
+	if chest.is_mimic:
+		art.texture = Chest.MIMIC_CLOSED_TEXTURE
+		label.text = "Your Chest Search shudders... it's a mimic!"
+	else:
+		label.text = "Your Chest Search says it's safe. Just a chest."
 
 
 func _open_chest(chest: Chest, art: TextureRect, label: Label, buttons: Control) -> void:
@@ -140,7 +164,8 @@ func start_battle(monster: Monster) -> void:
 	owner.add_child(battle)
 
 
-func _on_battle_finished(_result: Dictionary) -> void:
+func _on_battle_finished(result: Dictionary) -> void:
+	var monster: Monster = current_battle.monster
 	in_battle = false
 	current_battle = null
 	movement_controller.process_mode = Node.PROCESS_MODE_INHERIT
@@ -148,6 +173,21 @@ func _on_battle_finished(_result: Dictionary) -> void:
 	battle_ended.emit()
 
 	if Game.player.hp <= 0:
-		# game over for now: start the dungeon again
-		Game.new_game()
-		get_tree().reload_current_scene.call_deferred()
+		_on_defeated()
+		return
+
+	if result.won and monster is BigTom and not Game.player.beaten_boss:
+		Game.player.beaten_boss = true
+		get_tree().change_scene_to_file.call_deferred(COURTSHIP_SCENE)
+
+
+## Losing a fight counts as getting caught: the owner finds the cat knocked
+## out and carries it home (a strike and lost agility, nothing else is lost)
+func _on_defeated() -> void:
+	_set_movement_enabled(false)
+	# enough to get home; sleeping heals the rest
+	Game.player.hp = 1
+	var pass_out_screen = PassOutScene.instantiate()
+	pass_out_screen.defeated = true
+	pass_out_screen.game_over = Game.player.get_caught()
+	owner.add_child(pass_out_screen)

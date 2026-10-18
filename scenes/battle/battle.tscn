@@ -6,22 +6,18 @@
 [ext_resource type="Texture2D" uid="uid://dbysae5h74x28" path="res://scenes/battle/art/btns/AttackButton.png" id="4_attack"]
 [ext_resource type="Texture2D" uid="uid://cb1q30uyy20ot" path="res://scenes/battle/art/btns/BackButton.png" id="5_back"]
 [ext_resource type="Script" uid="uid://bbxu3agg73x2o" path="res://common/ui/hp_bar.gd" id="6_hpbar"]
+[ext_resource type="Texture2D" path="res://scenes/dungeon/art/btns/inventory_button.png" id="7_inventory"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_big"]
 font_size = 36
 outline_size = 8
 outline_color = Color(0, 0, 0, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxFlat_panel"]
 content_margin_left = 20.0
 content_margin_top = 14.0
 content_margin_right = 20.0
 content_margin_bottom = 14.0
-bg_color = Color(0.15, 0.15, 0.18, 0.35)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
 
 [sub_resource type="LabelSettings" id="LabelSettings_small"]
 font_size = 28
@@ -162,6 +158,12 @@ theme_override_constants/separation = 12
 layout_mode = 2
 size_flags_horizontal = 8
 icon = ExtResource("2_fight")
+flat = true
+
+[node name="Inventory" type="Button" parent="Menus/MainMenu"]
+layout_mode = 2
+size_flags_horizontal = 8
+icon = ExtResource("7_inventory")
 flat = true
 
 [node name="Escape" type="Button" parent="Menus/MainMenu" unique_id=1098224757]

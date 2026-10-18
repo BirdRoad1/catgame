@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://dspytslerhf6n" path="res://scenes/backstory/backstory.tscn" id="1_backstory"]
+[ext_resource type="Resource" path="res://scenes/bird_chase/bird_chase.dialogue" id="2_dialogue"]
+
+[node name="BirdChase" instance=ExtResource("1_backstory")]
+next_scene = "res://scenes/dungeon/dungeon.tscn"
+
+[node name="DialogueBox" parent="." index="4"]
+dialogue_resource = ExtResource("2_dialogue")

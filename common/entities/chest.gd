@@ -12,6 +12,8 @@ const MIMIC_CHANCE := 0.25
 
 const CLOSED_TEXTURE := preload("res://common/entities/art/chest_closed.png")
 const OPEN_TEXTURE := preload("res://common/entities/art/chest_open.png")
+## Shown when a Chest Search reveals a mimic
+const MIMIC_CLOSED_TEXTURE := preload("res://common/monsters/art/mimic_closed.png")
 
 var is_mimic := false
 

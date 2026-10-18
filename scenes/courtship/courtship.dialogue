@@ -1,0 +1,24 @@
+~ start
+# Plays once, the first time Big Tom is beaten. Only ladylookdown has art so far;
+# the comments say what the other shots should show.
+# TODO art: Big Tom slinking away into the dark
+Narrator: Big Tom staggers back, lets out one last hiss, and slinks off into the shadows. [#art=black]
+Narrator: The dungeon falls quiet. For the first time, nothing here wants to fight you.
+# TODO art: daylight at the end of a tunnel
+Narrator: At the end of the corridor, a soft light. Fresh air. You follow it.
+[next=1.5] [#art=black]
+Narrator: You step out into the street... and someone is standing over you.
+Narrator: It's her. The lady from the window. [#art=ladylookdown]
+Lady: Oh! Where did you come from?
+You: *meow*
+Narrator: Wait. That's not quite right anymore. You open your mouth and try again.
+You: H-hello.
+Lady: ...You have cat ears.
+You: I... yes. It's a long story.
+Narrator: She laughs. It's the nicest sound you've heard since you woke up in that strange body.
+Lady: You look like you've been through a lot. Do you want to get some tea and tell me about it?
+# TODO art: the two of them walking off together
+Narrator: You walk beside her, tail swishing happily. You've battled slimes, mice, mimics and the king of the alley cats...
+Narrator: ...but this might be the bravest thing you've done yet.
+[next=1.5] [#art=black]
+=> END

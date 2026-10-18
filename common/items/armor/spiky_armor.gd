@@ -4,6 +4,7 @@ extends Item
 func _init():
 	display_name = "Spiky Armor"
 	rarity = Rarity.RARE
+	icon = preload("res://common/items/armor/art/spiky_armor.png")
 	description = "Hurts whoever hits you."
 	slot = Slot.ARMOR
 	max_hp_bonus = 2

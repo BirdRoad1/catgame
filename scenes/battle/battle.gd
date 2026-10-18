@@ -7,6 +7,7 @@ signal turn_taken
 
 const TURN_DELAY := 0.8
 const AttackBarScene = preload("res://scenes/battle/attack_bar/attack_bar.tscn")
+const InventoryScene = preload("res://scenes/inventory/inventory.tscn")
 
 ## Set these before adding the scene to the tree
 var monster: Monster
@@ -26,6 +27,10 @@ var player: Player
 @export var back_btn: Button
 
 var busy := false
+@onready var inventory_btn: Button = $Menus/MainMenu/Inventory
+## The inventory screen while it's open, and the last item used from it
+var inventory_screen: Control
+var used_item_message := ""
 ## Extra text for the monster's turn, e.g. thorns damage
 var extra_log := ""
 ## Set when the player runs out of turns mid-fight: they pass out once the current round is over
@@ -45,10 +50,48 @@ func _ready() -> void:
 	back_btn.pressed.connect(_show_main_menu)
 	attack_btn.pressed.connect(_attack)
 	escape_btn.pressed.connect(_escape)
+	inventory_btn.pressed.connect(_open_inventory)
 
 	_show_main_menu()
 	_update_labels()
 	log_label.text = "A %s appears!" % monster.display_name
+
+
+## The inventory key opens the bag mid-fight too (the bag closes itself with it)
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_inventory") and not busy and inventory_screen == null:
+		get_viewport().set_input_as_handled()
+		_open_inventory()
+
+
+## Looking and changing gear is free; using an item costs the turn
+func _open_inventory() -> void:
+	if busy or inventory_screen != null:
+		return
+	_set_buttons_enabled(false)
+	used_item_message = ""
+	player.item_used.connect(_on_item_used)
+	inventory_screen = InventoryScene.instantiate()
+	inventory_screen.player = player
+	inventory_screen.closed.connect(_on_inventory_closed)
+	add_child(inventory_screen)
+
+
+func _on_item_used(message: String) -> void:
+	used_item_message = message
+
+
+func _on_inventory_closed() -> void:
+	player.item_used.disconnect(_on_item_used)
+	inventory_screen = null
+	_update_labels()
+	if used_item_message.is_empty():
+		_set_buttons_enabled(true)
+		return
+	turn_taken.emit()
+	log_label.text = used_item_message
+	await _wait()
+	await _monster_turn()
 
 
 func _show_main_menu() -> void:
@@ -64,13 +107,13 @@ func _show_fight_menu() -> void:
 func _update_labels() -> void:
 	monster_label.text = "%s  %d/%d" % [monster.display_name, monster.hp, monster.max_hp]
 	monster_hp_bar.set_hp(monster.hp, monster.max_hp)
-	player_label.text = "Your HP  %d/%d" % [player.hp, player.get_max_hp()]
+	player_label.text = "HP  %d/%d" % [player.hp, player.get_max_hp()]
 	player_hp_bar.set_hp(player.hp, player.get_max_hp())
 
 
 func _set_buttons_enabled(enabled: bool) -> void:
 	busy = not enabled
-	for btn in [fight_btn, escape_btn, attack_btn, back_btn]:
+	for btn in [fight_btn, inventory_btn, escape_btn, attack_btn, back_btn]:
 		btn.disabled = not enabled
 
 
@@ -113,7 +156,13 @@ func _escape() -> void:
 	_set_buttons_enabled(false)
 	turn_taken.emit()
 
-	if randf() < player.get_escape_chance():
+	if monster.level - player.level >= Player.NO_ESCAPE_LEVEL_GAP:
+		log_label.text = "The %s is far too strong to escape from!" % monster.display_name
+		await _wait()
+		await _monster_turn()
+		return
+
+	if randf() < player.get_escape_chance(monster):
 		log_label.text = "You got away!"
 		await _wait()
 		_finish(false, true)
@@ -137,8 +186,9 @@ func _monster_turn() -> void:
 			return
 
 	extra_log = ""
+	monster.regen_sp()
 	var skill := monster.choose_skill(self)
-	log_label.text = skill.use(monster, self) + extra_log
+	log_label.text = monster.use_skill(skill, self) + extra_log
 	_update_labels()
 
 	if monster.hp == 0:

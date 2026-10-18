@@ -42,18 +42,18 @@ texture = ExtResource("2_sub6p")
 [node name="Coords" type="Label" parent="." unique_id=1606647326]
 layout_mode = 0
 offset_left = 20.0
-offset_top = 20.0
+offset_top = 80.0
 offset_right = 112.0
-offset_bottom = 75.0
+offset_bottom = 135.0
 text = "(0, 0)"
 label_settings = SubResource("LabelSettings_dgfsc")
 
 [node name="TurnsLabel" type="Label" parent="." unique_id=1748360410]
 layout_mode = 0
 offset_left = 20.0
-offset_top = 80.0
+offset_top = 20.0
 offset_right = 400.0
-offset_bottom = 135.0
+offset_bottom = 75.0
 text = "Turns left: 0"
 label_settings = SubResource("LabelSettings_dgfsc")
 

@@ -22,6 +22,14 @@ func _init() -> void:
 
 
 ## Puts the item in the first empty bag slot. Returns false if the bag is full
+## Bag index of the first item of this class, or -1
+func find_in_bag(script: Script) -> int:
+	for i in bag.size():
+		if bag[i] != null and bag[i].get_script() == script:
+			return i
+	return -1
+
+
 func add(item: Item) -> bool:
 	var index := bag.find(null)
 	if index == -1:

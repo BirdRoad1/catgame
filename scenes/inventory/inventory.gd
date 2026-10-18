@@ -15,6 +15,8 @@ const BAG_ORIGIN := Vector2(109, 4)
 const BAG_COLUMNS := 4
 const EQUIP_ORIGIN := Vector2(11, 119)
 const EQUIP_COLUMNS := 3
+## The box in the top-left of the art, where the character is drawn
+const PORTRAIT_RECT := Rect2(5, 6, 97, 65)
 
 const EMPTY_ICONS := {
 	Item.Slot.HAT: preload("res://scenes/inventory/art/empty_hat.png"),
@@ -35,6 +37,7 @@ var equip_slots: Array = []
 ## Which slot is selected: "bag" or "equip", and its index
 var selected_kind := ""
 var selected_index := -1
+var portrait: TextureRect
 
 
 func _ready() -> void:
@@ -50,6 +53,14 @@ func _ready() -> void:
 		slot.empty_icon = EMPTY_ICONS[Inventory.EQUIP_LAYOUT[i]]
 		slot.pressed.connect(_on_equip_pressed.bind(i))
 		equip_slots.append(slot)
+
+	portrait = TextureRect.new()
+	portrait.position = PORTRAIT_RECT.position
+	portrait.size = PORTRAIT_RECT.size
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(portrait)
 
 	player.inventory.changed.connect(_refresh)
 	resized.connect(_fit_frame)
@@ -159,11 +170,13 @@ func _refresh() -> void:
 		bag_slots[i].set_item(player.inventory.bag[i])
 	for i in equip_slots.size():
 		equip_slots[i].set_item(player.inventory.equipped[i])
+	portrait.texture = player.get_sprite()
 	_refresh_stats()
 
 
 func _refresh_stats() -> void:
 	var lines: PackedStringArray = [
+		"Lv %d  XP %d/%d" % [player.level, player.xp, player.get_xp_to_next_level()],
 		"HP %d/%d" % [player.hp, player.get_max_hp()],
 		"Attack %d" % player.get_attack_power(),
 		"Agility %d" % player.get_agility(),

@@ -17,27 +17,49 @@ var xp_reward: int
 var drop_chance := 0.5
 ## What this monster can do on its turn. Picked at random, weighted by Skill.weight
 var skills: Array[Skill] = []
+## Skill points. Strong attacks and heals cost SP, so they can't be spammed.
+## Starts full each fight and regains SP_REGEN at the start of each of its turns
+var max_sp := 10
+var sp := -1 # -1 = not set yet, filled to max_sp on first use
+const SP_REGEN := 1
+
+## The monster only spawns once the player is at least this level
+var min_player_level := 0
+## Chance for a monster's attack to be a critical strike, and how much harder it hits
+var crit_chance := 0.08
+const CRIT_MIN_MULTIPLIER := 1.2
+const CRIT_MAX_MULTIPLIER := 1.4
 
 ## How much stronger a monster gets per level it's scaled up (0.15 = +15% of base)
 const HP_GROWTH := 0.15
 const ATTACK_GROWTH := 0.15
 const XP_GROWTH := 0.15
 
-## Levels the monster up with the player. A monster's base level is what it is
-## at player level 1, so the gap between them (and the attack bar speed) stays
-## the same while hp, attack, heals and xp grow
+## Spawned monsters are this many levels below or above the player
+const MIN_LEVEL_OFFSET := -2
+const MAX_LEVEL_OFFSET := 5
+
+
+## Picks a level near the player's (MIN_LEVEL_OFFSET to MAX_LEVEL_OFFSET,
+## never below 1) and scales the monster to it
 func scale_to_player_level(player_level: int) -> void:
-	var bonus := maxi(player_level - 1, 0)
+	scale_to_level(maxi(player_level + randi_range(MIN_LEVEL_OFFSET, MAX_LEVEL_OFFSET), 1))
+
+
+## Sets the level. Stats grow (or shrink) from the monster's base stats by
+## the growth rates for each level above (or below) its base level
+func scale_to_level(new_level: int) -> void:
+	var bonus := new_level - level
+	level = new_level
 	if bonus == 0:
 		return
-	level += bonus
-	max_hp = roundi(max_hp * (1.0 + HP_GROWTH * bonus))
+	max_hp = maxi(roundi(max_hp * (1.0 + HP_GROWTH * bonus)), 1)
 	hp = max_hp
-	attack_power = roundi(attack_power * (1.0 + ATTACK_GROWTH * bonus))
-	xp_reward = roundi(xp_reward * (1.0 + XP_GROWTH * bonus))
+	attack_power = maxi(roundi(attack_power * (1.0 + ATTACK_GROWTH * bonus)), 1)
+	xp_reward = maxi(roundi(xp_reward * (1.0 + XP_GROWTH * bonus)), 1)
 	for skill in skills:
 		if skill is HealSkill:
-			skill.amount = roundi(skill.amount * (1.0 + HP_GROWTH * bonus))
+			skill.amount = maxi(roundi(skill.amount * (1.0 + HP_GROWTH * bonus)), 1)
 
 
 ## How likely this monster is to be the one that spawns in the given corridor,
@@ -45,9 +67,26 @@ func scale_to_player_level(player_level: int) -> void:
 func get_spawn_chance(_corridor: Corridor) -> float:
 	return 0.0
 
-## Picks a usable skill for this turn, falling back to a plain attack
+## Starts the monster's turn: regains a little SP
+func regen_sp() -> void:
+	if sp < 0:
+		sp = max_sp
+	sp = mini(sp + SP_REGEN, max_sp)
+
+
+## Uses a skill, paying its SP cost. Returns the battle log message
+func use_skill(skill: Skill, battle: Node) -> String:
+	if sp < 0:
+		sp = max_sp
+	sp = maxi(sp - skill.sp_cost, 0)
+	return skill.use(self, battle)
+
+
+## Picks a usable, affordable skill for this turn, falling back to a plain attack
 func choose_skill(battle: Node) -> Skill:
-	var usable := skills.filter(func(s: Skill): return s.can_use(self, battle))
+	if sp < 0:
+		sp = max_sp
+	var usable := skills.filter(func(s: Skill): return s.sp_cost <= sp and s.can_use(self, battle))
 	if usable.is_empty():
 		return AttackSkill.new("Attack")
 

@@ -33,3 +33,35 @@ func test_common_drops_more_than_legendary() -> void:
 	print("rarity counts: ", counts)
 	assert_true(counts[Item.Rarity.COMMON] > counts[Item.Rarity.LEGENDARY])
 	assert_true(counts[Item.Rarity.LEGENDARY] > 0, "legendaries can still drop")
+
+
+func test_new_consumables_can_drop() -> void:
+	var names := []
+	for script in LootTable.ITEMS:
+		names.append(script.new().display_name)
+	assert_has(names, "Panacea")
+	assert_has(names, "Chest Search")
+	assert_has(names, "Milk Potion")
+
+
+func test_panacea_adds_one_to_a_stat() -> void:
+	var player := Player.new()
+	var before: int = player.base_hp_stat + player.base_attack_power + player.base_agility
+	Panacea.new().use(player)
+	assert_eq(player.base_hp_stat + player.base_attack_power + player.base_agility, before + 1)
+
+
+func test_milk_potion_heals_ten() -> void:
+	var player := Player.new()
+	player.hp = 50
+	MilkPotion.new().use(player)
+	assert_eq(player.hp, 60)
+
+
+func test_chest_search_is_found_in_bag() -> void:
+	var inventory := Inventory.new()
+	assert_eq(inventory.find_in_bag(ChestSearch), -1)
+	inventory.add(MilkPotion.new())
+	inventory.add(ChestSearch.new())
+	assert_eq(inventory.find_in_bag(ChestSearch), 1)
+	assert_false(ChestSearch.new().consumable, "only used from the chest prompt")

@@ -17,6 +17,8 @@ var inventory := Inventory.new()
 signal leveled_up(level: int)
 signal form_changed(form: Form)
 signal stats_changed
+## A consumable was used from the bag. message is what to show
+signal item_used(message: String)
 
 ## How the player looks. Starts as a full cat and becomes more human with each
 ## stage, unlocked by level (see FORM_LEVELS).
@@ -27,6 +29,15 @@ enum Form {
 	HALF_FURRY,     ## half-furry, half-human
 	CAT_TRAITS,     ## a person with cat traits (ears, tail)
 }
+
+## What the player looks like in each form, in Form order
+const FORM_SPRITES: Array[Texture2D] = [
+	preload("res://common/player/art/form_0.png"),
+	preload("res://common/player/art/form_1.png"),
+	preload("res://common/player/art/form_2.png"),
+	preload("res://common/player/art/form_3.png"),
+	preload("res://common/player/art/form_4.png"),
+]
 
 ## The level each form is reached at, in Form order
 const FORM_LEVELS: Array[int] = [1, 5, 10, 15, 20]
@@ -47,11 +58,19 @@ var turns_left := base_agility * TURNS_PER_AGILITY
 var xp := 0
 var form := Form.FULL_CAT
 var day := 1
+## Whether the bird chase cutscene has played (it leads to the dungeon the first time)
+var seen_bird_chase := false
+## Set the first time Big Tom is beaten, which plays the courtship cutscene
+var beaten_boss := false
 var times_caught := 0
 
 
 func _init() -> void:
 	inventory.changed.connect(_on_inventory_changed)
+
+
+func get_sprite() -> Texture2D:
+	return FORM_SPRITES[form]
 
 
 func get_max_hp() -> int:
@@ -83,9 +102,21 @@ func get_dodge_chance() -> float:
 	return clampf(get_agility() * 0.02, 0.0, 0.5)
 
 
-## Chance that Escape works. 50%, plus 3% per agility point
-func get_escape_chance() -> float:
-	return clampf(0.5 + get_agility() * 0.03, 0.1, 0.95)
+## Escape chance against a monster at full health
+const BASE_ESCAPE_CHANCE := 0.25
+## Escape chance against a monster at 0 HP. It rises evenly as the monster loses health
+const MAX_ESCAPE_CHANCE := 0.95
+## Monsters this many levels above you can't be escaped from
+const NO_ESCAPE_LEVEL_GAP := 5
+
+
+## Chance that Escape works. 25% while the monster is at full health, rising
+## as it gets hurt, and 0% if it's 5+ levels above you
+func get_escape_chance(monster: Monster) -> float:
+	if monster.level - level >= NO_ESCAPE_LEVEL_GAP:
+		return 0.0
+	var missing := 1.0 - float(monster.hp) / maxi(monster.max_hp, 1)
+	return lerpf(BASE_ESCAPE_CHANCE, MAX_ESCAPE_CHANCE, clampf(missing, 0.0, 1.0))
 
 
 ## How many steps the player can take in the dungeon before passing out.
@@ -173,6 +204,7 @@ func use_item(bag_index: int) -> String:
 		return ""
 	var message := item.use(self)
 	inventory.remove_at(bag_index)
+	item_used.emit(message)
 	return message
 
 

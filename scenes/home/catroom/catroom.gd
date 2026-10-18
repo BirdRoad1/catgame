@@ -7,6 +7,8 @@ extends Control
 @onready var message: Label = %Message
 
 const DUNGEON_SCENE := "res://scenes/dungeon/dungeon.tscn"
+## Played instead of going straight to the dungeon the first time
+const BIRD_CHASE_SCENE := "res://scenes/bird_chase/bird_chase.tscn"
 
 ## How long to stay dark while sleeping, and how long messages stay up
 @export var sleep_time: float = 1.5
@@ -20,6 +22,7 @@ var stat_buttons: Array[Button] = []
 
 func _ready() -> void:
 	_build_stats_panel()
+	Game.player.leveled_up.connect(_on_leveled_up)
 	fade.show()
 	fade.color.a = 1.0
 	var tween := create_tween()
@@ -32,6 +35,10 @@ func _on_leave_pressed() -> void:
 		return
 	if Game.player.turns_left <= 0:
 		show_message("You're too exhausted to go out. Get some sleep first.")
+		return
+	if not Game.player.seen_bird_chase:
+		Game.player.seen_bird_chase = true
+		get_tree().change_scene_to_file(BIRD_CHASE_SCENE)
 		return
 	get_tree().change_scene_to_file(DUNGEON_SCENE)
 
@@ -95,3 +102,12 @@ func _update_stats() -> void:
 		p.base_agility, p.get_max_dungeon_turns(), p.stat_points]
 	for button in stat_buttons:
 		button.disabled = p.stat_points <= 0
+
+
+func _exit_tree() -> void:
+	if Game.player.leveled_up.is_connected(_on_leveled_up):
+		Game.player.leveled_up.disconnect(_on_leveled_up)
+
+
+func _on_leveled_up(_level: int) -> void:
+	_update_stats()

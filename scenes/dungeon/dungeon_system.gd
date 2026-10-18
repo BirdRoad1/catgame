@@ -42,15 +42,31 @@ func get_unvisited_direction():
 
 func _on_move(_pos, _facing):
 	corridor_img.texture = get_relevant_image()
+	_update_coords()
+
+
+func _update_coords() -> void:
+	coords.text = "(" + str(dungeon.current_location.x) + ", " + str(dungeon.current_location.y) + ") Facing: " + Direction.keys()[dungeon.facing]
 
 
 func _ready() -> void:
 	corridor_img.texture = get_relevant_image()
 
 	dungeon.moved.connect(_on_move)
+	coords.visible = Game.show_debug
+	Game.debug_toggled.connect(_on_debug_toggled)
 
-	coords.text = "(" + str(dungeon.current_location.x) + ", " + str(dungeon.current_location.y) + ") Facing: " + Direction.keys()[dungeon.facing] 
+	_update_coords()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+
+func _on_debug_toggled(debug_visible: bool) -> void:
+	coords.visible = debug_visible
+
+
+func _exit_tree() -> void:
+	if Game.debug_toggled.is_connected(_on_debug_toggled):
+		Game.debug_toggled.disconnect(_on_debug_toggled)

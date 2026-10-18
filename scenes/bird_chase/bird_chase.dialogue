@@ -1,0 +1,22 @@
+~ start
+# Plays the first time the cat leaves home. Art is placeholder (black) for now;
+# the comments say what each shot should show.
+# TODO art: the cat at the open window, morning light
+Narrator: You push the window open with your nose. The air outside smells... new. [#art=black]
+# TODO art: a small bird lands on the windowsill
+Narrator: Something lands on the windowsill. A little bird, hopping about, completely unaware of you.
+You: *wiggles*
+Narrator: Every muscle in your body tenses. You don't know why, but you NEED that bird.
+# TODO art: the cat pouncing, the bird flapping off
+[next=1] [#art=black]
+Narrator: You pounce! The bird flutters away just out of reach.
+# TODO art: chasing the bird through the garden / down the street
+Narrator: You give chase, over the fence, through a hedge, down an alley...
+You: *meow!*
+# TODO art: a dark hole/drain at the end of the alley, the bird disappearing into it
+Narrator: The bird darts into a dark opening at the end of the alley. Without thinking, you dive in after it.
+# TODO art: darkness, then stone corridors
+[next=1.5] [#art=black]
+Narrator: The bird is gone. Cold stone walls stretch out in every direction.
+Narrator: You'll have to find your own way from here.
+=> END

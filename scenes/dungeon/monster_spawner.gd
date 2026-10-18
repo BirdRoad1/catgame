@@ -10,19 +10,19 @@ const Corridor = DungeonScript.Corridor
 const ENCOUNTER_CHANCE := 0.25
 
 ## Every monster that can spawn in the dungeon. Mimics only come from chests (see Chest)
-var monsters: Array[GDScript] = [Slime, Mouse]
+var monsters: Array[GDScript] = [Slime, Mouse, CatEnemy, BigTom]
 
 
 ## Returns a new monster for this corridor, scaled to the player's level, or
 ## null if nothing spawns
 func roll(corridor: Corridor, player_level := 1) -> Monster:
-	var monster := _pick(corridor)
+	var monster := _pick(corridor, player_level)
 	if monster != null:
 		monster.scale_to_player_level(player_level)
 	return monster
 
 
-func _pick(corridor: Corridor) -> Monster:
+func _pick(corridor: Corridor, player_level: int) -> Monster:
 	if randf() >= ENCOUNTER_CHANCE:
 		return null
 
@@ -30,6 +30,8 @@ func _pick(corridor: Corridor) -> Monster:
 	var weights: Array[float] = []
 	for script in monsters:
 		var monster: Monster = script.new()
+		if player_level < monster.min_player_level:
+			continue
 		var weight := monster.get_spawn_chance(corridor)
 		if weight > 0.0:
 			candidates.append(monster)

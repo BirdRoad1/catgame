@@ -84,3 +84,28 @@ func test_sleeping_heals_refills_turns_and_advances_day() -> void:
 func test_base_regen_is_zero() -> void:
 	player.inventory = Inventory.new()
 	assert_eq(player.get_regen_per_turn(), 0)
+
+
+func _monster(monster_level: int, hp: int, max_hp: int) -> Monster:
+	var monster := Monster.new()
+	monster.level = monster_level
+	monster.max_hp = max_hp
+	monster.hp = hp
+	return monster
+
+
+func test_escape_chance_starts_at_a_quarter() -> void:
+	assert_eq(player.get_escape_chance(_monster(1, 20, 20)), 0.25)
+
+
+func test_escape_chance_rises_as_monster_is_hurt() -> void:
+	var half := player.get_escape_chance(_monster(1, 10, 20))
+	var almost_dead := player.get_escape_chance(_monster(1, 1, 20))
+	assert_between(half, 0.59, 0.61)
+	assert_true(almost_dead > half)
+	assert_true(almost_dead <= Player.MAX_ESCAPE_CHANCE)
+
+
+func test_cant_escape_monsters_five_levels_above() -> void:
+	assert_eq(player.get_escape_chance(_monster(6, 1, 20)), 0.0)
+	assert_true(player.get_escape_chance(_monster(5, 20, 20)) > 0.0, "4 levels above is still escapable")

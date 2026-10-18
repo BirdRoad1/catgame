@@ -4,6 +4,7 @@ extends Item
 func _init():
 	display_name = "Fire Claws"
 	rarity = Rarity.UNCOMMON
+	icon = preload("res://common/items/weapons/art/fire_claws.png")
 	description = "Leaves burns that keep hurting."
 	slot = Slot.WEAPON
 	attack_bonus = 3

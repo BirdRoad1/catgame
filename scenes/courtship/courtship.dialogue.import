@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=18
+type="Resource"
+uid="uid://bvnk4mndjt2u1"
+path="res://.godot/imported/courtship.dialogue-c79db07eb683ca2ab5601faba541688d.tres"
+
+[deps]
+
+source_file="res://scenes/courtship/courtship.dialogue"
+dest_files=["res://.godot/imported/courtship.dialogue-c79db07eb683ca2ab5601faba541688d.tres"]
+
+[params]
+
+defaults=true
