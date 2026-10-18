@@ -65,3 +65,15 @@ func test_chest_search_is_found_in_bag() -> void:
 	inventory.add(ChestSearch.new())
 	assert_eq(inventory.find_in_bag(ChestSearch), 1)
 	assert_false(ChestSearch.new().consumable, "only used from the chest prompt")
+
+
+func test_deleting_items_from_bag_and_equipment() -> void:
+	var inventory := Inventory.new()
+	inventory.add(Fedora.new())
+	inventory.add(BasicClaws.new())
+	inventory.equip(1)
+	assert_not_null(inventory.remove_at(0))
+	assert_null(inventory.bag[0])
+	var weapon_slot := Inventory.EQUIP_LAYOUT.find(Item.Slot.WEAPON)
+	assert_true(inventory.remove_equipped(weapon_slot) is BasicClaws)
+	assert_null(inventory.equipped[weapon_slot])

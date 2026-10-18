@@ -1,10 +1,13 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cduhm4knaf857"]
 
 [ext_resource type="PackedScene" uid="uid://dspytslerhf6n" path="res://scenes/backstory/backstory.tscn" id="1_backstory"]
-[ext_resource type="Resource" path="res://scenes/courtship/courtship.dialogue" id="2_dialogue"]
+[ext_resource type="Resource" uid="uid://bvnk4mndjt2u1" path="res://scenes/courtship/courtship.dialogue" id="2_dialogue"]
 
-[node name="Courtship" instance=ExtResource("1_backstory")]
-next_scene = "res://scenes/home/catroom/catroom.tscn"
+[node name="Courtship" unique_id=1474037765 instance=ExtResource("1_backstory")]
 
-[node name="DialogueBox" parent="." index="4"]
+[node name="BoxBlur" parent="." index="3"]
+anchors_preset = -1
+
+[node name="DialogueBox" parent="." index="4" unique_id=449206990]
+anchors_preset = -1
 dialogue_resource = ExtResource("2_dialogue")

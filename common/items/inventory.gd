@@ -46,6 +46,14 @@ func remove_at(index: int) -> Item:
 	return item
 
 
+## Throws away an equipped item for good
+func remove_equipped(equip_index: int) -> Item:
+	var item := equipped[equip_index]
+	equipped[equip_index] = null
+	changed.emit()
+	return item
+
+
 ## Equips the item at a bag index, swapping out whatever was in that slot
 func equip(bag_index: int) -> bool:
 	var item := bag[bag_index]

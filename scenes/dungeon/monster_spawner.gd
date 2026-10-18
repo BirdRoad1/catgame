@@ -10,7 +10,7 @@ const Corridor = DungeonScript.Corridor
 const ENCOUNTER_CHANCE := 0.25
 
 ## Every monster that can spawn in the dungeon. Mimics only come from chests (see Chest)
-var monsters: Array[GDScript] = [Slime, Mouse, CatEnemy, BigTom]
+var monsters: Array[GDScript] = [Slime, Mouse, CatEnemy, Fishy, Sparrow, Falcon]
 
 
 ## Returns a new monster for this corridor, scaled to the player's level, or

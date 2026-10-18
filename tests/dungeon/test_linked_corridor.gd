@@ -227,3 +227,31 @@ func test_long_walk() -> void:
 	dungeon.dump_map(10)
 	print(dungeon.frontiers)
 	print("DEAD ENDS:" + str(1.0 * dungeon.dead_ends/dungeon.explored_num))
+
+
+# --- Exit corridor ---
+
+func test_exit_is_south_of_start_and_only_leads_back() -> void:
+	var dungeon := Dungeon.new()
+	var exit_corridor: Corridor = dungeon.map.get(Dungeon.EXIT_LOCATION)
+	assert_true(exit_corridor.is_exit)
+	assert_eq(Dungeon.EXIT_LOCATION, Vector2i(0, 1))
+	assert_true(dungeon.move_direction(Direction.SOUTH))
+	assert_true(dungeon.is_at_exit())
+	assert_eq(exit_corridor.open_directions, [Direction.NORTH] as Array[Direction], "no corridors come out of it")
+	assert_false(dungeon.map.has(Vector2i(0, 2)))
+
+
+func test_nothing_connects_into_the_exit_later() -> void:
+	seed(5)
+	var dungeon := Dungeon.new()
+	# wander around the start a lot; neighbours of the exit must never open into it
+	for i in 400:
+		var dirs := dungeon.get_current_corridor().open_directions.duplicate()
+		dungeon.move_direction(dirs.pick_random())
+	var exit_corridor: Corridor = dungeon.map.get(Dungeon.EXIT_LOCATION)
+	assert_eq(exit_corridor.open_directions, [Direction.NORTH] as Array[Direction])
+	for dir in [Direction.EAST, Direction.SOUTH, Direction.WEST]:
+		var neighbour: Corridor = dungeon.map.get(Dungeon.EXIT_LOCATION + Dungeon.directions[dir])
+		if neighbour != null:
+			assert_false(neighbour.can_move(Dungeon.get_opposite_dir(dir)))

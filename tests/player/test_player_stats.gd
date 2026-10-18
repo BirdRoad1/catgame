@@ -109,3 +109,13 @@ func test_escape_chance_rises_as_monster_is_hurt() -> void:
 func test_cant_escape_monsters_five_levels_above() -> void:
 	assert_eq(player.get_escape_chance(_monster(6, 1, 20)), 0.0)
 	assert_true(player.get_escape_chance(_monster(5, 20, 20)) > 0.0, "4 levels above is still escapable")
+
+
+func test_too_hurt_to_leave_below_a_quarter_hp() -> void:
+	player.hp = 24
+	assert_true(player.is_too_hurt_to_leave())
+	player.hp = 25
+	assert_false(player.is_too_hurt_to_leave())
+	player.hp = 1
+	player.rest()
+	assert_false(player.is_too_hurt_to_leave(), "sleeping fixes it")

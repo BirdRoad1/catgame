@@ -14,7 +14,7 @@ func _ready() -> void:
 
 func new_game() -> void:
 	player = Player.new()
-	for item in [HealthPotion.new(), HealthPotion.new(), BasicClaws.new(), BellCollar.new(), LuckyPaw.new()]:
+	for item in [MilkPotion.new(), MilkPotion.new(), BasicClaws.new(), BellCollar.new(), LuckyPaw.new()]:
 		player.inventory.add(item)
 
 

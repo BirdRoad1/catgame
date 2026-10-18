@@ -14,7 +14,6 @@ const ITEMS: Array[Script] = [
 	preload("res://common/items/armor/spiky_armor.gd"),
 	preload("res://common/items/collars/bell_collar.gd"),
 	preload("res://common/items/consumables/chest_search.gd"),
-	preload("res://common/items/consumables/health_potion.gd"),
 	preload("res://common/items/consumables/milk_potion.gd"),
 	preload("res://common/items/consumables/panacea.gd"),
 	preload("res://common/items/hats/cat_burglar_mask.gd"),

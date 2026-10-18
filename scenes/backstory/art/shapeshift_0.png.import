@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cn531b24vjp0j"
-path="res://.godot/imported/boss_placeholder.png-617561984c5ceb9f00fe8669b63c49a4.ctex"
+uid="uid://ctjnf5w6iuhy3"
+path="res://.godot/imported/shapeshift_0.png-fce0acad00bde1b73aea9e3ba8c44226.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://common/monsters/art/boss_placeholder.png"
-dest_files=["res://.godot/imported/boss_placeholder.png-617561984c5ceb9f00fe8669b63c49a4.ctex"]
+source_file="res://scenes/backstory/art/shapeshift_0.png"
+dest_files=["res://.godot/imported/shapeshift_0.png-fce0acad00bde1b73aea9e3ba8c44226.ctex"]
 
 [params]
 

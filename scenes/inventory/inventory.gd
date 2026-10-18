@@ -38,6 +38,16 @@ var equip_slots: Array = []
 var selected_kind := ""
 var selected_index := -1
 var portrait: TextureRect
+## "+" buttons next to HP / Attack / Agility, shown while there are free stat points
+var stat_buttons: Array[Button] = []
+## Throws the selected item away. Needs a second click to confirm
+var delete_button: Button
+var delete_armed := false
+## In the empty strip under the portrait box
+const DELETE_RECT := Rect2(62, 77, 38, 12)
+## Which line of the stats text each stat is on (line 0 is the level)
+const STAT_LINES := {Player.Stat.HP: 1, Player.Stat.ATTACK: 2, Player.Stat.AGILITY: 3}
+const STAT_BUTTON_SIZE := Vector2(10, 10)
 
 
 func _ready() -> void:
@@ -61,6 +71,53 @@ func _ready() -> void:
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	frame.add_child(portrait)
+
+	for stat in Player.Stat.values():
+		var button := Button.new()
+		button.text = "+"
+		button.add_theme_font_size_override("font_size", 6)
+		button.add_theme_color_override("font_color", Color.WHITE)
+		button.add_theme_color_override("font_hover_color", Color.WHITE)
+		button.add_theme_color_override("font_pressed_color", Color.WHITE)
+		for state in ["normal", "hover", "pressed"]:
+			var style := StyleBoxFlat.new()
+			style.bg_color = {"normal": Color(0.42, 0.36, 0.3), "hover": Color(0.55, 0.47, 0.38), "pressed": Color(0.3, 0.26, 0.22)}[state]
+			style.set_corner_radius_all(2)
+			style.set_content_margin_all(0)
+			button.add_theme_stylebox_override(state, style)
+		button.size = STAT_BUTTON_SIZE
+		button.custom_minimum_size = STAT_BUTTON_SIZE
+		button.focus_mode = Control.FOCUS_NONE
+		button.pressed.connect(_on_stat_button_pressed.bind(stat))
+		frame.add_child(button)
+		stat_buttons.append(button)
+
+	delete_button = Button.new()
+	delete_button.position = DELETE_RECT.position
+	delete_button.size = DELETE_RECT.size
+	delete_button.focus_mode = Control.FOCUS_NONE
+	delete_button.add_theme_font_size_override("font_size", 7)
+	# black and white with square corners, like the rest of the game's UI
+	for state in ["normal", "hover", "pressed"]:
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.85, 0.85, 0.85) if state == "hover" else Color.WHITE
+		style.border_color = Color.BLACK
+		style.set_border_width_all(1)
+		style.set_content_margin_all(0)
+		delete_button.add_theme_stylebox_override(state, style)
+	for c in ["font_color", "font_hover_color", "font_pressed_color"]:
+		delete_button.add_theme_color_override(c, Color.BLACK)
+	delete_button.pressed.connect(_on_delete_pressed)
+	delete_button.visible = false
+	frame.add_child(delete_button)
+
+	# item descriptions get a smaller font so long ones fit the panel
+	if item_info_label.label_settings:
+		var small := item_info_label.label_settings.duplicate()
+		small.font_size = 6
+		small.line_spacing = -1
+		item_info_label.label_settings = small
+	item_info_label.clip_text = true
 
 	player.inventory.changed.connect(_refresh)
 	resized.connect(_fit_frame)
@@ -130,8 +187,34 @@ func _select(kind: String, index: int, show_info := true) -> void:
 		bag_slots[i].set_selected(kind == "bag" and i == index)
 	for i in equip_slots.size():
 		equip_slots[i].set_selected(kind == "equip" and i == index)
+	delete_armed = false
+	_update_delete_button()
 	if show_info:
 		_show_item_info()
+
+
+func _update_delete_button() -> void:
+	delete_button.visible = _get_selected_item() != null
+	delete_button.text = "Sure?" if delete_armed else "Delete"
+	delete_button.size = DELETE_RECT.size
+
+
+## First click asks "Sure?", the second throws the item away for good
+func _on_delete_pressed() -> void:
+	var item := _get_selected_item()
+	if item == null:
+		return
+	if not delete_armed:
+		delete_armed = true
+		_update_delete_button()
+		return
+	if selected_kind == "bag":
+		player.inventory.remove_at(selected_index)
+	else:
+		player.inventory.remove_equipped(selected_index)
+	_select("", -1, false)
+	item_name_label.text = ""
+	item_info_label.text = "You threw away the %s." % item.display_name
 
 
 func _get_selected_item() -> Item:
@@ -149,8 +232,8 @@ func _show_item_info() -> void:
 		item_info_label.text = ""
 		return
 
-	item_name_label.text = "%s (%s)" % [item.display_name, item.get_rarity_name()]
-	var lines: PackedStringArray = [item.description]
+	item_name_label.text = item.display_name
+	var lines: PackedStringArray = [item.get_rarity_name(), item.description]
 	var bonuses := item.get_bonus_text()
 	if bonuses != "":
 		lines.append(bonuses)
@@ -181,10 +264,38 @@ func _refresh_stats() -> void:
 		"Attack %d" % player.get_attack_power(),
 		"Agility %d" % player.get_agility(),
 	]
+	# gear stats share lines (two per line) so a fully kitted cat still fits the panel
+	var extras: PackedStringArray = []
 	if player.get_damage_per_turn() > 0:
-		lines.append("Dmg/turn %d" % player.get_damage_per_turn())
+		extras.append("DoT %d" % player.get_damage_per_turn())
 	if player.get_thorns_damage() > 0:
-		lines.append("Thorns %d" % player.get_thorns_damage())
+		extras.append("Thorns %d" % player.get_thorns_damage())
 	if player.get_regen_per_turn() > 0:
-		lines.append("Regen %d/turn" % player.get_regen_per_turn())
+		extras.append("Regen %d" % player.get_regen_per_turn())
+	for i in range(0, extras.size(), 2):
+		lines.append("  ".join(extras.slice(i, i + 2)))
+	if player.stat_points > 0:
+		lines.append("Points: %d" % player.stat_points)
 	stats_label.text = "\n".join(lines)
+	_place_stat_buttons()
+
+
+## Lines the "+" buttons up with their stat's line, at the right edge of the panel
+func _place_stat_buttons() -> void:
+	var line_height := float(stats_label.get_line_height())
+	if stats_label.label_settings:
+		line_height += stats_label.label_settings.line_spacing
+	for stat in stat_buttons.size():
+		var button := stat_buttons[stat]
+		button.visible = player.stat_points > 0
+		button.size = STAT_BUTTON_SIZE
+		var line: int = STAT_LINES[stat]
+		var line_top := stats_label.position.y + line * line_height
+		button.position = Vector2(
+			stats_label.position.x + stats_label.size.x - STAT_BUTTON_SIZE.x,
+			line_top + (line_height - STAT_BUTTON_SIZE.y) / 2)
+
+
+func _on_stat_button_pressed(stat: Player.Stat) -> void:
+	player.spend_stat_point(stat)
+	_refresh_stats()

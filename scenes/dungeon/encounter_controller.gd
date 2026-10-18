@@ -39,6 +39,8 @@ func _on_moved(location: Vector2i, _facing) -> void:
 	rolled[location] = true
 
 	var corridor := dungeon.get_current_corridor()
+	if corridor.is_exit:
+		return # nothing lurks at the way out
 	var chest := Chest.roll(corridor)
 	if chest != null:
 		show_chest(chest)
@@ -176,7 +178,7 @@ func _on_battle_finished(result: Dictionary) -> void:
 		_on_defeated()
 		return
 
-	if result.won and monster is BigTom and not Game.player.beaten_boss:
+	if result.won and monster is Falcon and not Game.player.beaten_boss:
 		Game.player.beaten_boss = true
 		get_tree().change_scene_to_file.call_deferred(COURTSHIP_SCENE)
 

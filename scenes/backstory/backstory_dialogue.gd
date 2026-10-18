@@ -24,6 +24,11 @@ signal dialogue_finished
 var dialogue_line: DialogueLine
 var is_waiting_for_input: bool = false
 
+## Holding Ctrl fast-forwards: typing finishes instantly and lines advance
+## every SKIP_INTERVAL seconds (timed lines too)
+const SKIP_INTERVAL := 0.08
+var skip_cooldown := 0.0
+
 
 func _ready() -> void:
 	start()
@@ -62,13 +67,20 @@ func apply_dialogue_line() -> void:
 
 	dialogue_label.dialogue_line = dialogue_line
 
-	# [next=3] in a line: move on by itself after that many seconds, ignoring input
+	# [next=3] in a line: move on by itself after that many seconds, ignoring
+	# input (except holding Ctrl, which cuts the wait short)
 	if is_auto_advance():
+		var line := dialogue_line
 		var timer := get_tree().create_timer(dialogue_line.time.to_float())
 		if not dialogue_line.text.is_empty():
 			dialogue_label.type_out()
-		await timer.timeout
-		next(dialogue_line.next_id)
+		while timer.time_left > 0 and not is_skipping():
+			await get_tree().process_frame
+		if is_skipping():
+			await get_tree().create_timer(SKIP_INTERVAL).timeout
+		# skipping may have already moved past this line
+		if dialogue_line == line:
+			next(dialogue_line.next_id)
 		return
 
 	if not dialogue_line.text.is_empty():
@@ -77,6 +89,21 @@ func apply_dialogue_line() -> void:
 
 	is_waiting_for_input = true
 	continue_hint.show()
+
+
+func is_skipping() -> bool:
+	return Input.is_key_pressed(KEY_CTRL)
+
+
+func _process(delta: float) -> void:
+	skip_cooldown -= delta
+	if dialogue_line == null or not is_skipping() or is_auto_advance() or skip_cooldown > 0:
+		return
+	if dialogue_label.is_typing:
+		dialogue_label.skip_typing()
+	elif is_waiting_for_input:
+		skip_cooldown = SKIP_INTERVAL
+		next(dialogue_line.next_id)
 
 
 func is_auto_advance() -> bool:

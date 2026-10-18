@@ -60,7 +60,7 @@ var form := Form.FULL_CAT
 var day := 1
 ## Whether the bird chase cutscene has played (it leads to the dungeon the first time)
 var seen_bird_chase := false
-## Set the first time Big Tom is beaten, which plays the courtship cutscene
+## Set the first time the Falcon is beaten, which plays the courtship cutscene
 var beaten_boss := false
 var times_caught := 0
 
@@ -123,6 +123,14 @@ func get_escape_chance(monster: Monster) -> float:
 ## Uses base agility only, so swapping gear doesn't change the turn count
 func get_max_dungeon_turns() -> int:
 	return maxi(base_agility, 0) * TURNS_PER_AGILITY
+
+
+## Below this share of max HP, the cat has to sleep before going out again
+const MIN_HP_TO_LEAVE := 0.25
+
+
+func is_too_hurt_to_leave() -> bool:
+	return hp < get_max_hp() * MIN_HP_TO_LEAVE
 
 
 ## Sleeping: full HP, a full set of turns, and a new day

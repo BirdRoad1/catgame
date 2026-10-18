@@ -9,6 +9,7 @@ font_color = Color(0.1, 0.1, 0.1, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_info"]
 font_size = 8
+line_spacing = -2.0
 font_color = Color(0.2, 0.18, 0.16, 1)
 
 [node name="Inventory" type="Control" node_paths=PackedStringArray("frame", "stats_label", "item_name_label", "item_info_label")]
@@ -71,6 +72,6 @@ layout_mode = 0
 offset_left = 236.0
 offset_top = 118.0
 offset_right = 310.0
-offset_bottom = 171.0
+offset_bottom = 172.0
 label_settings = SubResource("LabelSettings_info")
 autowrap_mode = 3

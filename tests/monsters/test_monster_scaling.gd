@@ -121,7 +121,7 @@ func _spawn_counts(player_level: int) -> Dictionary:
 
 
 func test_boss_never_spawns_below_level_25() -> void:
-	assert_false(_spawn_counts(24).has("Big Tom"))
+	assert_false(_spawn_counts(24).has("Falcon"))
 
 
 func test_boss_spawns_often_from_level_25() -> void:
@@ -130,11 +130,11 @@ func test_boss_spawns_often_from_level_25() -> void:
 	for n in counts.values():
 		total += n
 	print("level 25 spawns: ", counts)
-	assert_between(counts.get("Big Tom", 0) / float(total), 0.3, 0.45)
+	assert_between(counts.get("Falcon", 0) / float(total), 0.3, 0.45)
 
 
 func test_boss_is_always_three_levels_above() -> void:
-	var boss := BigTom.new()
+	var boss := Falcon.new()
 	boss.scale_to_player_level(28)
 	assert_eq(boss.level, 31)
 

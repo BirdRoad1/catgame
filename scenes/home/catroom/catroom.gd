@@ -17,7 +17,6 @@ const BIRD_CHASE_SCENE := "res://scenes/bird_chase/bird_chase.tscn"
 var busy := false
 var message_tween: Tween
 var stats_label: Label
-var stat_buttons: Array[Button] = []
 
 
 func _ready() -> void:
@@ -35,6 +34,9 @@ func _on_leave_pressed() -> void:
 		return
 	if Game.player.turns_left <= 0:
 		show_message("You're too exhausted to go out. Get some sleep first.")
+		return
+	if Game.player.is_too_hurt_to_leave():
+		show_message("You're too hurt to go out. Get some sleep first.")
 		return
 	if not Game.player.seen_bird_chase:
 		Game.player.seen_bird_chase = true
@@ -70,7 +72,7 @@ func show_message(text: String) -> void:
 	message_tween.tween_property(message, "modulate:a", 0.0, 0.5)
 
 
-## Day, stats and buttons for spending free stat points (built in code for now)
+## Day and stats (built in code for now). Free stat points are spent in the inventory
 func _build_stats_panel() -> void:
 	var panel := VBoxContainer.new()
 	panel.position = Vector2(16, 16)
@@ -78,30 +80,15 @@ func _build_stats_panel() -> void:
 	move_child(panel, fade.get_index()) # keep it under the fade
 	stats_label = Label.new()
 	panel.add_child(stats_label)
-	var row := HBoxContainer.new()
-	panel.add_child(row)
-	for stat in Player.Stat.values():
-		var button := Button.new()
-		button.text = "+1 " + ["HP", "Atk", "Agi"][stat]
-		button.pressed.connect(_on_stat_button_pressed.bind(stat))
-		row.add_child(button)
-		stat_buttons.append(button)
-	_update_stats()
-
-
-func _on_stat_button_pressed(stat: Player.Stat) -> void:
-	Game.player.spend_stat_point(stat)
 	_update_stats()
 
 
 func _update_stats() -> void:
 	var p := Game.player
-	stats_label.text = "Day %d   Lv %d   Caught %d/%d\nHP %d (%d/%d)   Atk %d   Agi %d (%d turns)\nFree stat points: %d" % [
+	stats_label.text = "Day %d   Lv %d   Caught %d/%d\nHP %d (%d/%d)   Atk %d   Agi %d (%d turns)\nFree stat points: %d (spend them in the inventory)" % [
 		p.day, p.level, p.times_caught, Player.MAX_CATCHES,
 		p.base_hp_stat, p.hp, p.get_max_hp(), p.base_attack_power,
 		p.base_agility, p.get_max_dungeon_turns(), p.stat_points]
-	for button in stat_buttons:
-		button.disabled = p.stat_points <= 0
 
 
 func _exit_tree() -> void:

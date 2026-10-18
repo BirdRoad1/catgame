@@ -25,6 +25,9 @@ func rotate(vec: Vector2i):
 		Direction.WEST:
 			return Vector2i(-vec.y, vec.x)
 
+## The exit corridor stands out in gold, and shows even before it's visited
+const EXIT_COLOR := Color(0.85, 0.65, 0.1)
+
 func draw_centered(x: float, y: float, radius: float, color: Color):
 	draw_rect(Rect2(x - radius/2.0, y - radius/2.0, radius, radius), color)
 
@@ -42,17 +45,22 @@ func _draw() -> void:
 			var pos = Vector2i(posX, posY)
 			var corridor: Corridor = dungeon.map.get(pos)
 
+			if corridor != null && corridor.is_exit:
+				var exit_rotated = rotate(Vector2i(x * 20, y * 20))
+				draw_centered(origin.x + exit_rotated.x, origin.y + exit_rotated.y, 10, EXIT_COLOR)
 			if corridor != null && corridor.did_travel:
 				var origX = x * 20
 				var origY = y * 20
 				var rotated = rotate(Vector2i(origX, origY))
 				var corridorMapX = origin.x + rotated.x
 				var corridorMapY = origin.y + rotated.y
-				draw_centered(corridorMapX, corridorMapY, 10, Color("green"))
+				draw_centered(corridorMapX, corridorMapY, 10, EXIT_COLOR if corridor.is_exit else Color("green"))
 				for dir in corridor.open_directions:
 					var adj = dungeon.map.get(dungeon.apply_direction(pos, dir))
 					var color = Color('purple')
-					if adj != null && adj.did_travel:
+					if adj != null && adj.is_exit:
+						color = EXIT_COLOR
+					elif adj != null && adj.did_travel:
 						color = Color('green')
 					match dir:
 						Direction.NORTH:

@@ -1,24 +1,28 @@
 ~ start
-# Plays once, the first time Big Tom is beaten. Only ladylookdown has art so far;
 # the comments say what the other shots should show.
-# TODO art: Big Tom slinking away into the dark
-Narrator: Big Tom staggers back, lets out one last hiss, and slinks off into the shadows. [#art=black]
-Narrator: The dungeon falls quiet. For the first time, nothing here wants to fight you.
-# TODO art: daylight at the end of a tunnel
-Narrator: At the end of the corridor, a soft light. Fresh air. You follow it.
+Narrator: The falcon falls onto his knees, lets out one last hiss, and disappears into the shadows. [#art=black]
+Narrator: The dungeon falls quiet. For the first time, the dungeon is at peace.
+Narrator: At the end of the corridor, a soft light. You walk towards it.
 [next=1.5] [#art=black]
 Narrator: You step out into the street... and someone is standing over you.
-Narrator: It's her. The lady from the window. [#art=ladylookdown]
+Narrator: It's her! the lady from the window! [#art=ladylookdown]
 Lady: Oh! Where did you come from?
 You: *meow*
-Narrator: Wait. That's not quite right anymore. You open your mouth and try again.
+Narrator: Hold on, that's not right.
+# The shapeshift: each form's sprite in turn, from cat to human
+[next=0.7] [#art=shapeshift_0]
+[next=0.7] [#art=shapeshift_1]
+[next=0.7] [#art=shapeshift_2]
+[next=0.7] [#art=shapeshift_3]
+[next=1.2] [#art=shapeshift_4]
+Narrator: Your body stretches, shifts, rises... until you're standing on two legs, face to face with her. [#art=ladyfacetoface]
 You: H-hello.
-Lady: ...You have cat ears.
-You: I... yes. It's a long story.
-Narrator: She laughs. It's the nicest sound you've heard since you woke up in that strange body.
+Lady: You're like me... aren't you?
+You: I think so?
+Narrator: She laughs.
 Lady: You look like you've been through a lot. Do you want to get some tea and tell me about it?
 # TODO art: the two of them walking off together
-Narrator: You walk beside her, tail swishing happily. You've battled slimes, mice, mimics and the king of the alley cats...
-Narrator: ...but this might be the bravest thing you've done yet.
+Narrator: You walk beside her, tail swishing happily.
+Narrator: You walk with her into the city...
 [next=1.5] [#art=black]
 => END

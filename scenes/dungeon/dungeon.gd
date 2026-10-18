@@ -8,6 +8,8 @@ enum Direction {
 class Corridor:
 	var open_directions: Array[Direction] = []
 	var did_travel = false
+	## The way out, just south of the start. Never grows new corridors
+	var is_exit = false
 
 	func can_move(dir: Direction):
 		return open_directions.has(dir)
@@ -95,6 +97,16 @@ class Dungeon:
 			map.set(new_vec, new_corridor)
 			frontiers += 1
 
+		# the corridor behind the start is the exit
+		map.get(EXIT_LOCATION).is_exit = true
+
+	## South of the start (Vector2i.DOWN is south)
+	const EXIT_LOCATION := Vector2i(0, 1)
+
+	func is_at_exit() -> bool:
+		var corridor: Corridor = map.get(current_location)
+		return corridor != null and corridor.is_exit
+
 	func _travel_to(loc: Vector2i):
 		# TODO: maybe store an adjacency matrix or similar
 		var corridor: Corridor = map.get(loc)
@@ -114,7 +126,8 @@ class Dungeon:
 		for i in range(Direction.size()):
 			var dir: Direction = i
 			var new_vec = apply_direction(loc, dir)
-			if !has_corridor(new_vec):
+			# the exit is a dead end: nothing branches off it
+			if !has_corridor(new_vec) and !corridor.is_exit:
 				need_slots.append(dir)
 		need_slots.shuffle()
 		
