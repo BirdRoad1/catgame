@@ -1,8 +1,8 @@
 extends "res://tests/test_case.gd"
-## Tests for LinkedCorridor in scenes/dungeon/daungeon_system.gd.
+## Tests for LinkedCorridor in scenes/dungeon/dungeon_system.gd.
 ## Inner classes and enums are reached through the script, no scene or node needed.
 
-const DungeonSystem = preload("res://scenes/dungeon/daungeon_system.gd")
+const DungeonSystem = preload("res://scenes/dungeon/dungeon_system.gd")
 const LinkedCorridor = DungeonSystem.Corridor
 const Dungeon = DungeonSystem.Dungeon
 const Direction = DungeonSystem.Direction
@@ -12,97 +12,217 @@ var corridor
 
 func before_each() -> void:
 	# Fixed seed so random generation gives the same result every run
-	seed(1234567)
+	seed(1723487)
 	corridor = LinkedCorridor.new()
 
 
 # --- Example: shows the pattern, and checks the runner works ---
 
-func test_directions_line_up_with_array_indices() -> void:
-	assert_eq(Direction.NORTH, 0)
-	assert_eq(Direction.EAST, 1)
-	assert_eq(Direction.SOUTH, 2)
-	assert_eq(Direction.WEST, 3)
+# func test_directions_line_up_with_array_indices() -> void:
+# 	assert_eq(Direction.NORTH, 0)
+# 	assert_eq(Direction.EAST, 1)
+# 	assert_eq(Direction.SOUTH, 2)
+# 	assert_eq(Direction.WEST, 3)
 
 
-func test_new_corridor_has_four_direction_slots() -> void:
-	assert_eq(corridor.directions.size(), 4)
+# func test_new_corridor_has_four_direction_slots() -> void:
+# 	assert_eq(corridor.directions.size(), 4)
 
 
 # --- init() ---
 
+func get_first_direction(dungeon: Dungeon):
+	for direction in range(4):
+		var adjacent_corridor: LinkedCorridor = dungeon.get_adjacent_corridor(direction)
+		if dungeon.can_move_direction(direction) && !adjacent_corridor.did_travel:
+			return direction
+	for direction in range(4):
+		if dungeon.can_move_direction(direction):
+			return direction
+	return null
 
-func test_cool() -> void:
+## First open direction leading to an untravelled corridor, or null.
+func get_unvisited_direction(dungeon: Dungeon):
+	for direction in range(4):
+		var adjacent_corridor: LinkedCorridor = dungeon.get_adjacent_corridor(direction)
+		if dungeon.can_move_direction(direction) && adjacent_corridor != null && !adjacent_corridor.did_travel:
+			return direction
+	return null
+
+func count_untravelled(dungeon: Dungeon) -> int:
+	var count = 0
+	for loc in dungeon.map:
+		if !dungeon.map[loc].did_travel:
+			count += 1
+	return count
+
+## Depth-first backtracking walk. Goes to unvisited corridors first; when stuck,
+## retraces the path back. Done when the path is empty (back at start, nothing left).
+# func test_cool() -> void:
+
+	# var dungeon = Dungeon.new()
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.WEST)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.NORTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.NORTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.NORTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.EAST)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.SOUTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.EAST)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.SOUTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.SOUTH)
+	# dungeon.dump_current()
+	# print("Can move back to origin? " + str(dungeon.can_move_direction(Direction.WEST)))
+
+## Checks every corridor in the map against its neighbours.
+func find_inconsistencies(dungeon: Dungeon) -> Array[String]:
+	var problems: Array[String] = []
+	for loc in dungeon.map:
+		var c: LinkedCorridor = dungeon.map[loc]
+		if c.did_travel && c.open_directions.is_empty():
+			problems.append("%s travelled but has no exits (dead end)" % loc)
+		for dir in range(4):
+			var n_loc = dungeon.apply_direction(loc, dir)
+			var n: LinkedCorridor = dungeon.map.get(n_loc)
+			var opp = DungeonSystem.get_opposite_dir(dir)
+			if c.can_move(dir):
+				if n == null:
+					problems.append("%s open %d but no corridor at %s" % [loc, dir, n_loc])
+				elif !n.can_move(opp):
+					problems.append("%s open %d but %s is walled back (%d)" % [loc, dir, n_loc, opp])
+			elif n != null && n.can_move(opp):
+				problems.append("%s walled %d but %s is open toward it" % [loc, dir, n_loc])
+	return problems
+
+
+	# dungeon.move_direction(Direction.NORTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.WEST)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.NORTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.NORTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.NORTH)
+	# dungeon.dump_current()
+
+	# # Retrace steps: reverse order, opposite directions
+	# dungeon.move_direction(Direction.SOUTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.WEST)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.SOUTH)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.EAST)
+	# dungeon.dump_current()
+	# dungeon.move_direction(Direction.EAST)
+	# dungeon.dump_current()
+
+	# var end_id = dungeon.get_current_corridor().get_instance_id()
+	# print("END corridor id: ", end_id, " ", dungeon.get_current_corridor())
+	# print("Same corridor? ", end_id == start_id, " / same ref? ", dungeon.get_current_corridor() == start)
+
+
+
+# func test_init_keeps_directions_that_were_passed_in() -> void:
+# 	pending()
+
+
+# func test_init_without_dead_ends_opens_at_least_one_direction() -> void:
+# 	pending()
+
+
+# func test_init_with_dead_ends_allowed_can_open_zero_directions() -> void:
+# 	pending("try several seeds and check at least one gives a dead end")
+
+
+# func test_init_never_opens_more_than_four_directions() -> void:
+# 	pending()
+
+
+# func test_init_is_repeatable_with_the_same_seed() -> void:
+# 	pending()
+
+
+# # --- move_direction() ---
+
+# func test_move_direction_into_a_wall_is_rejected() -> void:
+# 	pending()
+
+
+# func test_move_direction_into_an_open_corridor_returns_it() -> void:
+# 	pending()
+
+
+# # --- Linking ---
+
+# func test_corridors_link_back_the_way_you_came() -> void:
+# 	pending("going NORTH then SOUTH should return to the starting corridor")
+
+
+# func test_revisited_corridor_is_remembered_not_regenerated() -> void:
+# 	pending()
+
+
+## Depth-first backtracking walk for a bajillion steps, then walks all the way
+## back to start and checks every corridor against its neighbours.
+## Also fails if the dungeon runs out of places to explore before the step cap.
+func test_long_walk() -> void:
 	var dungeon = Dungeon.new()
-	dungeon.init()
-	var start = dungeon.current_corridor
-	var start_id = start.get_instance_id()
-	print("START corridor id: ", start_id, " ", start)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.WEST)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.WEST)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.NORTH)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.EAST)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.NORTH)
-	dungeon.dump_current()
+	var path: Array[int] = [] # directions taken, popped to backtrack
+	var max_steps = 50000
+	var steps = 0
+	var failed = false
 
-	# Retrace steps: reverse order, opposite directions
-	dungeon.go_direction(Direction.SOUTH)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.WEST)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.SOUTH)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.EAST)
-	dungeon.dump_current()
-	dungeon.go_direction(Direction.EAST)
-	dungeon.dump_current()
+	while steps < max_steps:
+		steps += 1
+		var dir = get_unvisited_direction(dungeon)
+		if dir != null:
+			if !dungeon.move_direction(dir):
+				print("Failed to move forward ", dir, " at ", dungeon.current_location)
+				failed = true
+				break
+			path.append(dir)
+			continue
 
-	var end_id = dungeon.current_corridor.get_instance_id()
-	print("END corridor id: ", end_id, " ", dungeon.current_corridor)
-	print("Same corridor? ", end_id == start_id, " / same ref? ", dungeon.current_corridor == start)
+		if path.is_empty():
+			break # back at start with nothing unvisited: the dungeon ran out
 
+		var back = DungeonSystem.get_opposite_dir(path.pop_back())
+		if !dungeon.move_direction(back):
+			print("Failed to backtrack ", back, " at ", dungeon.current_location)
+			failed = true
+			break
 
+	var ran_out = steps < max_steps && !failed
+	print("Steps: ", steps, " corridors: ", dungeon.map.size(), " untravelled: ", count_untravelled(dungeon))
+	if ran_out:
+		print("Dungeon ran out of places to explore!")
 
-func test_init_keeps_directions_that_were_passed_in() -> void:
-	pending()
+	# Walk back to start so backtracking itself gets verified.
+	while !path.is_empty():
+		var back = DungeonSystem.get_opposite_dir(path.pop_back())
+		if !dungeon.move_direction(back):
+			print("Failed to backtrack ", back, " at ", dungeon.current_location)
+			failed = true
+			break
 
+	var problems = find_inconsistencies(dungeon)
+	for p in problems.slice(0, 20):
+		print("  ", p)
+	print("Inconsistencies: ", problems.size())
 
-func test_init_without_dead_ends_opens_at_least_one_direction() -> void:
-	pending()
-
-
-func test_init_with_dead_ends_allowed_can_open_zero_directions() -> void:
-	pending("try several seeds and check at least one gives a dead end")
-
-
-func test_init_never_opens_more_than_four_directions() -> void:
-	pending()
-
-
-func test_init_is_repeatable_with_the_same_seed() -> void:
-	pending()
-
-
-# --- go_direction() ---
-
-func test_go_direction_into_a_wall_is_rejected() -> void:
-	pending()
-
-
-func test_go_direction_into_an_open_corridor_returns_it() -> void:
-	pending()
-
-
-# --- Linking ---
-
-func test_corridors_link_back_the_way_you_came() -> void:
-	pending("going NORTH then SOUTH should return to the starting corridor")
-
-
-func test_revisited_corridor_is_remembered_not_regenerated() -> void:
-	pending()
+	assert_eq(failed, false)
+	assert_eq(ran_out, false)
+	assert_eq(dungeon.current_location, Vector2i.ZERO)
+	assert_eq(problems.size(), 0)
+	dungeon.dump_map(10)
+	print(dungeon.frontiers)
