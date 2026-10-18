@@ -9,8 +9,8 @@ const Corridor = DungeonScript.Corridor
 ## Chance that entering a new corridor starts a fight at all
 const ENCOUNTER_CHANCE := 0.25
 
-## Every monster that can spawn in the dungeon
-var monsters: Array[GDScript] = [Slime, Mouse, Mimic]
+## Every monster that can spawn in the dungeon. Mimics only come from chests (see Chest)
+var monsters: Array[GDScript] = [Slime, Mouse]
 
 
 ## Returns a new monster for this corridor, scaled to the player's level, or

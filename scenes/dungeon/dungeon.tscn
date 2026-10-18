@@ -8,9 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://ca0htiri62tf7" path="res://scenes/dungeon/art/move_btns/Left.png" id="5_h6dl1"]
 [ext_resource type="Texture2D" uid="uid://n3csgpgsrdwg" path="res://scenes/dungeon/art/move_btns/Right.png" id="6_jxre4"]
 [ext_resource type="Texture2D" uid="uid://djkqcmrsbdxi4" path="res://scenes/dungeon/art/move_btns/Turnaround.png" id="7_rwayf"]
-[ext_resource type="Script" path="res://scenes/dungeon/encounter_controller.gd" id="8_encounter"]
-[ext_resource type="Script" path="res://scenes/dungeon/inventory_controller.gd" id="9_inventory"]
-[ext_resource type="Script" path="res://scenes/dungeon/turn_controller.gd" id="10_turns"]
+[ext_resource type="Script" uid="uid://bddrm8lw1a0tg" path="res://scenes/dungeon/encounter_controller.gd" id="8_encounter"]
+[ext_resource type="Script" uid="uid://cwvm13yr5hu3g" path="res://scenes/dungeon/inventory_controller.gd" id="9_inventory"]
+[ext_resource type="Script" uid="uid://hmhra865b1pu" path="res://scenes/dungeon/turn_controller.gd" id="10_turns"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_dgfsc"]
 font_size = 40
@@ -48,7 +48,7 @@ offset_bottom = 75.0
 text = "(0, 0)"
 label_settings = SubResource("LabelSettings_dgfsc")
 
-[node name="TurnsLabel" type="Label" parent="."]
+[node name="TurnsLabel" type="Label" parent="." unique_id=1748360410]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 80.0
@@ -118,16 +118,16 @@ size_flags_horizontal = 4
 icon = ExtResource("7_rwayf")
 flat = true
 
-[node name="EncounterController" type="Node" parent="." node_paths=PackedStringArray("movement_controller")]
+[node name="EncounterController" type="Node" parent="." unique_id=1647430074 node_paths=PackedStringArray("movement_controller")]
 script = ExtResource("8_encounter")
 movement_controller = NodePath("../MovementController")
 
-[node name="InventoryController" type="Node" parent="." node_paths=PackedStringArray("movement_controller", "encounter_controller")]
+[node name="InventoryController" type="Node" parent="." unique_id=697215395 node_paths=PackedStringArray("movement_controller", "encounter_controller")]
 script = ExtResource("9_inventory")
 movement_controller = NodePath("../MovementController")
 encounter_controller = NodePath("../EncounterController")
 
-[node name="TurnController" type="Node" parent="." node_paths=PackedStringArray("movement_controller", "encounter_controller", "turns_label")]
+[node name="TurnController" type="Node" parent="." unique_id=1777286378 node_paths=PackedStringArray("movement_controller", "encounter_controller", "turns_label")]
 script = ExtResource("10_turns")
 movement_controller = NodePath("../MovementController")
 encounter_controller = NodePath("../EncounterController")

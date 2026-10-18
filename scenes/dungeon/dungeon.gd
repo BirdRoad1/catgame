@@ -75,7 +75,7 @@ class Dungeon:
 		var corridor = self.map.get(self.current_location)
 		return corridor.can_move(dir)
 
-	func get_current_corridor():
+	func get_current_corridor() -> Corridor:
 		return map.get(self.current_location)
 
 	func get_adjacent_corridor(dir: Direction):
@@ -144,7 +144,7 @@ class Dungeon:
 		corridor.did_travel = true
 		frontiers -= 1
 		explored_num += 1
-		no_dead_end_radius = 20 + 0.8 * sqrt(explored_num);
+		no_dead_end_radius = 20 + 0.5 * sqrt(explored_num);
 
 		moved.emit(current_location, facing)
 

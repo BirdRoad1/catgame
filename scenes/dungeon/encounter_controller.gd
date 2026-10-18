@@ -1,7 +1,7 @@
 extends Node
 
-## Rolls for a monster the first time the player enters each corridor,
-## and runs the battle on top of the dungeon when one shows up.
+## Rolls for a chest or a monster the first time the player enters each
+## corridor, and runs the battle on top of the dungeon when one shows up.
 
 const DungeonScript = preload("res://scenes/dungeon/dungeon.gd")
 const Dungeon = DungeonScript.Dungeon
@@ -22,6 +22,8 @@ var spawner := MonsterSpawner.new()
 var rolled: Dictionary[Vector2i, bool] = {Vector2i.ZERO: true}
 var in_battle := false
 var current_battle: Node
+## The chest prompt on screen, if any
+var chest_prompt: Control
 
 
 func _ready() -> void:
@@ -33,9 +35,95 @@ func _on_moved(location: Vector2i, _facing) -> void:
 		return
 	rolled[location] = true
 
-	var monster := spawner.roll(dungeon.get_current_corridor(), Game.player.level)
+	var corridor := dungeon.get_current_corridor()
+	var chest := Chest.roll(corridor)
+	if chest != null:
+		show_chest(chest)
+		return
+
+	var monster := spawner.roll(corridor, Game.player.level)
 	if monster != null:
 		start_battle(monster)
+
+
+## A chest, battle or chest prompt is on screen, so the player can't walk or open the bag
+func is_busy() -> bool:
+	return in_battle or chest_prompt != null
+
+
+func show_chest(chest: Chest) -> void:
+	_set_movement_enabled(false)
+	chest_prompt = _build_chest_prompt(chest)
+	owner.add_child(chest_prompt)
+
+
+## Built in code for now: chest art, a message, and Open / Leave buttons
+func _build_chest_prompt(chest: Chest) -> Control:
+	var prompt := CenterContainer.new()
+	prompt.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	prompt.add_child(box)
+
+	var art := TextureRect.new()
+	art.texture = Chest.CLOSED_TEXTURE
+	art.custom_minimum_size = Vector2(256, 256)
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	box.add_child(art)
+
+	var label := Label.new()
+	label.text = "You found a chest!"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(label)
+
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_child(buttons)
+	var open_btn := Button.new()
+	open_btn.text = "Open"
+	buttons.add_child(open_btn)
+	var leave_btn := Button.new()
+	leave_btn.text = "Leave"
+	buttons.add_child(leave_btn)
+
+	open_btn.pressed.connect(_open_chest.bind(chest, art, label, buttons))
+	leave_btn.pressed.connect(_close_chest)
+	return prompt
+
+
+func _open_chest(chest: Chest, art: TextureRect, label: Label, buttons: Control) -> void:
+	buttons.hide()
+	if chest.is_mimic:
+		art.texture = Mimic.new().texture
+		label.text = "It was a mimic!"
+		await get_tree().create_timer(1.2).timeout
+		_close_chest()
+		var mimic := Mimic.new()
+		mimic.scale_to_player_level(Game.player.level)
+		start_battle(mimic)
+		return
+
+	art.texture = Chest.OPEN_TEXTURE
+	var item := LootTable.roll_item()
+	label.text = "You found a %s %s!" % [item.get_rarity_name(), item.display_name]
+	if not Game.player.inventory.add(item):
+		label.text += "\nBut your bag is full, so you leave it behind."
+	await get_tree().create_timer(2.0).timeout
+	_close_chest()
+
+
+func _close_chest() -> void:
+	if chest_prompt == null:
+		return
+	chest_prompt.queue_free()
+	chest_prompt = null
+	_set_movement_enabled(true)
+
+
+func _set_movement_enabled(enabled: bool) -> void:
+	movement_controller.process_mode = Node.PROCESS_MODE_INHERIT if enabled else Node.PROCESS_MODE_DISABLED
+	movement_controller.visible = enabled
 
 
 func start_battle(monster: Monster) -> void:

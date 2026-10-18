@@ -13,7 +13,7 @@ var is_open := false
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if is_open or encounter_controller.in_battle:
+	if is_open or encounter_controller.is_busy():
 		return
 	if event.is_action_pressed("toggle_inventory"):
 		get_viewport().set_input_as_handled()
