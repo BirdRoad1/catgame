@@ -58,7 +58,6 @@ func _ready() -> void:
 	corridor_img.texture = get_relevant_image()
 
 	for i in 1000:
-		await get_tree().create_timer(1/5.0).timeout
 
 		var dir = get_unvisited_direction()
 		if dir != null:
@@ -68,10 +67,13 @@ func _ready() -> void:
 		else:
 			dir = Dungeon.get_opposite_dir(path.pop_back())
 
+		await get_tree().create_timer(1.0/3).timeout
 		face(dir)
+		minimap_draw.refresh(dungeon, facing)
+		await get_tree().create_timer(1.0/3).timeout
 		dungeon.move_direction(dir)
-		minimap_draw.refresh(dungeon)
-		coords.text = "(" + str(dungeon.current_location.x) + ", " + str(dungeon.current_location.y) + ")" 
+		minimap_draw.refresh(dungeon, facing)
+		coords.text = "(" + str(dungeon.current_location.x) + ", " + str(dungeon.current_location.y) + ") Facing: " + Direction.keys()[facing] 
 		corridor_img.texture = get_relevant_image()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
