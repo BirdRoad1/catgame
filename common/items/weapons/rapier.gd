@@ -3,6 +3,7 @@ extends Item
 
 func _init():
 	display_name = "Rapier"
+	rarity = Rarity.EPIC
 	description = "Light enough to dance with."
 	slot = Slot.WEAPON
 	attack_bonus = 3

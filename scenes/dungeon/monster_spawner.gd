@@ -13,8 +13,16 @@ const ENCOUNTER_CHANCE := 0.25
 var monsters: Array[GDScript] = [Slime, Mouse, Mimic]
 
 
-## Returns a new monster for this corridor, or null if nothing spawns
-func roll(corridor: Corridor) -> Monster:
+## Returns a new monster for this corridor, scaled to the player's level, or
+## null if nothing spawns
+func roll(corridor: Corridor, player_level := 1) -> Monster:
+	var monster := _pick(corridor)
+	if monster != null:
+		monster.scale_to_player_level(player_level)
+	return monster
+
+
+func _pick(corridor: Corridor) -> Monster:
 	if randf() >= ENCOUNTER_CHANCE:
 		return null
 

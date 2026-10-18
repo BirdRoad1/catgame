@@ -3,6 +3,7 @@ extends Item
 
 func _init():
 	display_name = "Leather Armor"
+	rarity = Rarity.COMMON
 	description = "A little stiff, but it helps."
 	slot = Slot.ARMOR
 	max_hp_bonus = 1

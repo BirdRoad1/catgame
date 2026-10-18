@@ -4,14 +4,19 @@ extends RefCounted
 ## The player's stats and inventory. Lives on the Game autoload so it
 ## survives scene changes.
 
-var base_max_hp := 30
-var base_attack_power := 4
-var base_agility := 0
-var hp := base_max_hp
+## Base stats. Gear bonuses are added on top (see the get_ functions)
+var base_hp_stat := 10
+var base_attack_power := 10
+var base_agility := 10
+## Current health. Each HP stat point is worth HEALTH_PER_HP_STAT health
+var hp := base_hp_stat * HEALTH_PER_HP_STAT
+## Free points from levelling up, spent with spend_stat_point()
+var stat_points := 0
 var inventory := Inventory.new()
 
 signal leveled_up(level: int)
 signal form_changed(form: Form)
+signal stats_changed
 
 ## How the player looks. Starts as a full cat and becomes more human with each
 ## stage, unlocked by level (see FORM_LEVELS).
@@ -24,17 +29,25 @@ enum Form {
 }
 
 ## The level each form is reached at, in Form order
-const FORM_LEVELS: Array[int] = [1, 3, 5, 7, 10]
+const FORM_LEVELS: Array[int] = [1, 5, 10, 15, 20]
 
-## Dungeon steps before passing out, and how many more each level adds
-const BASE_DUNGEON_TURNS := 40
-const TURNS_PER_LEVEL := 5
+const HEALTH_PER_HP_STAT := 10
+## Dungeon steps per agility point
+const TURNS_PER_AGILITY := 10
+## Agility lost each time the owner catches the cat out of turns
+const CATCH_AGILITY_PENALTY := 1
+## Being caught this many times is game over
+const MAX_CATCHES := 3
+
+enum Stat { HP, ATTACK, AGILITY }
 
 var level := 1
 ## Turns left before passing out. Carries over between dungeon trips until you sleep
-var turns_left := BASE_DUNGEON_TURNS
+var turns_left := base_agility * TURNS_PER_AGILITY
 var xp := 0
 var form := Form.FULL_CAT
+var day := 1
+var times_caught := 0
 
 
 func _init() -> void:
@@ -42,7 +55,7 @@ func _init() -> void:
 
 
 func get_max_hp() -> int:
-	return base_max_hp + inventory.get_total(&"max_hp_bonus")
+	return base_hp_stat * HEALTH_PER_HP_STAT + inventory.get_total(&"max_hp_bonus")
 
 
 func get_attack_power() -> int:
@@ -75,15 +88,59 @@ func get_escape_chance() -> float:
 	return clampf(0.5 + get_agility() * 0.03, 0.1, 0.95)
 
 
-## How many steps the player can take in the dungeon before passing out
+## How many steps the player can take in the dungeon before passing out.
+## Uses base agility only, so swapping gear doesn't change the turn count
 func get_max_dungeon_turns() -> int:
-	return BASE_DUNGEON_TURNS + (level - 1) * TURNS_PER_LEVEL
+	return maxi(base_agility, 0) * TURNS_PER_AGILITY
 
 
-## Sleeping: full HP and a full set of turns
+## Sleeping: full HP, a full set of turns, and a new day
 func rest() -> void:
 	hp = get_max_hp()
 	turns_left = get_max_dungeon_turns()
+	day += 1
+
+
+## The owner catches the cat after it runs out of turns. Returns true if that
+## was the last catch (game over)
+func get_caught() -> bool:
+	times_caught += 1
+	base_agility = maxi(base_agility - CATCH_AGILITY_PENALTY, 0)
+	turns_left = mini(turns_left, get_max_dungeon_turns())
+	stats_changed.emit()
+	return is_game_over()
+
+
+func is_game_over() -> bool:
+	return times_caught >= MAX_CATCHES
+
+
+## Adds one to a base stat. Agility also adds its turns to the current run
+func add_stat(stat: Stat, amount := 1) -> void:
+	match stat:
+		Stat.HP:
+			base_hp_stat += amount
+			hp += amount * HEALTH_PER_HP_STAT
+		Stat.ATTACK:
+			base_attack_power += amount
+		Stat.AGILITY:
+			base_agility += amount
+			turns_left += amount * TURNS_PER_AGILITY
+	stats_changed.emit()
+
+
+## Spends a free stat point. Returns false if there are none
+func spend_stat_point(stat: Stat) -> bool:
+	if stat_points <= 0:
+		return false
+	stat_points -= 1
+	add_stat(stat)
+	return true
+
+
+func _add_all_stats(amount: int) -> void:
+	for stat in Stat.values():
+		add_stat(stat, amount)
 
 
 ## Whether the current form is allowed to wear this item
@@ -133,9 +190,10 @@ func gain_xp(amount: int) -> int:
 		xp -= get_xp_to_next_level()
 		level += 1
 		gained += 1
-		turns_left += TURNS_PER_LEVEL
-		leveled_up.emit(level)
+		_add_all_stats(1)
+		stat_points += 1
 		_update_form()
+		leveled_up.emit(level)
 	return gained
 
 
@@ -151,6 +209,8 @@ func _update_form() -> void:
 	var new_form := get_form_for_level(level)
 	if new_form != form:
 		form = new_form
+		# evolving gives an extra point in every stat
+		_add_all_stats(1)
 		form_changed.emit(form)
 
 

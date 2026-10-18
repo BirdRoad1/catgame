@@ -3,6 +3,7 @@ extends Item
 
 func _init():
 	display_name = "Great Sword"
+	rarity = Rarity.LEGENDARY
 	description = "Needs two very human hands."
 	slot = Slot.WEAPON
 	attack_bonus = 12

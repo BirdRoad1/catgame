@@ -32,7 +32,6 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if done: return
-	# TODO: move the cursor; call _finish(0.0) if it sweeps off the end
 	var elapsedSec = (Time.get_ticks_msec() - start_time) / 1000.0
 	var timeRemaining = sweep_time - elapsedSec
 	var widthRemaining = bar.size.x - cursor.position.x if going_right else cursor.position.x
@@ -44,10 +43,9 @@ func _process(_delta: float) -> void:
 	var progress = elapsedSec / sweep_time
 	cursor.position.x = clampf(progress * bar.size.x if going_right else bar.size.x - (progress * bar.size.x), 0, bar.size.x)
 	
-func _unhandled_input(event: InputEvent) -> void:
-	# TODO: on click, work out accuracy from the cursor's distance to the center
+func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		accept_event()
+		get_viewport().set_input_as_handled()
 		var center = bar.size.x / 2
 		var delta = abs(center - (cursor.position.x - cursor.size.x / 2.0))
 		var accuracy = 1.0 - clampf(delta / center, 0, 1)

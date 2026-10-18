@@ -138,7 +138,7 @@ func _show_item_info() -> void:
 		item_info_label.text = ""
 		return
 
-	item_name_label.text = item.display_name
+	item_name_label.text = "%s (%s)" % [item.display_name, item.get_rarity_name()]
 	var lines: PackedStringArray = [item.description]
 	var bonuses := item.get_bonus_text()
 	if bonuses != "":

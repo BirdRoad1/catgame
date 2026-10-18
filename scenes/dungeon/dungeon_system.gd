@@ -40,31 +40,16 @@ func get_unvisited_direction():
 # Called when the node enters the scene tree for the first time.
 ## Depth-first backtracking walk: unvisited corridors first, retrace the path when stuck.
 
-func _on_move(pos, facing):
+func _on_move(_pos, _facing):
 	corridor_img.texture = get_relevant_image()
 
 
 func _ready() -> void:
-	var path: Array[int] = [] # directions taken, popped to backtrack
 	corridor_img.texture = get_relevant_image()
 
 	dungeon.moved.connect(_on_move)
 
-	#for i in 1000:
-#
-		#var dir = get_unvisited_direction()
-		#if dir != null:
-			#path.append(dir)
-		#elif path.is_empty():
-			#break # back at start with nothing unvisited
-		#else:
-			#dir = Dungeon.get_opposite_dir(path.pop_back())
-#
-		#await get_tree().create_timer(1.0/3).timeout
-		#dungeon.face(dir)
-		#await get_tree().create_timer(1.0/3).timeout
-		#dungeon.move_direction(dir)
-		#coords.text = "(" + str(dungeon.current_location.x) + ", " + str(dungeon.current_location.y) + ") Facing: " + Direction.keys()[dungeon.facing] 
+	coords.text = "(" + str(dungeon.current_location.x) + ", " + str(dungeon.current_location.y) + ") Facing: " + Direction.keys()[dungeon.facing] 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

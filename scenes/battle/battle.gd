@@ -185,6 +185,12 @@ func _win() -> void:
 	if levels > 0:
 		log_label.text += " Level up! You're now level %d." % player.level
 	await _wait()
+	var drop := LootTable.roll_drop(monster)
+	if drop != null:
+		log_label.text = "The %s dropped a %s %s!" % [monster.display_name, drop.get_rarity_name(), drop.display_name]
+		if not player.inventory.add(drop):
+			log_label.text += " But your bag is full, so you leave it behind."
+		await _wait()
 	_finish(true, false)
 
 

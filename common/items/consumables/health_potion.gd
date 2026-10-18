@@ -5,6 +5,7 @@ const HEAL_AMOUNT := 12
 
 func _init():
 	display_name = "Health Potion"
+	rarity = Rarity.COMMON
 	description = "Heals %d HP." % HEAL_AMOUNT
 	consumable = true
 

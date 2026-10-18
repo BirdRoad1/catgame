@@ -3,6 +3,7 @@ extends Item
 
 func _init():
 	display_name = "Heavy Armor"
+	rarity = Rarity.RARE
 	description = "Like wearing a wall."
 	slot = Slot.ARMOR
 	max_hp_bonus = 10

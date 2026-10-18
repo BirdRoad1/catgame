@@ -33,7 +33,7 @@ func _on_moved(location: Vector2i, _facing) -> void:
 		return
 	rolled[location] = true
 
-	var monster := spawner.roll(dungeon.get_current_corridor())
+	var monster := spawner.roll(dungeon.get_current_corridor(), Game.player.level)
 	if monster != null:
 		start_battle(monster)
 

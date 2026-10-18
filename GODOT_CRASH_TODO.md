@@ -21,8 +21,8 @@ Repro project: `/home/user/godot_crash_repro` (crashes 4.7.2 with signal 11 in `
 - [ ] Search Godot issues/PRs for an existing report ("Error constructing a GDScriptInstance", use-after-free)
 - [ ] `git log`/`blame` the destructor change on master — see why the error branches were left alone
 - [ ] Build master with `debug_symbols=yes use_asan=yes` and run the repro to confirm
-      - Python < 3.14 needs the `zstandard` module for the build (I used a venv with `scons` + `zstandard`)
-      - The clone/venv I started in Claude's scratchpad is temporary — clone your own fork instead
+	  - Python < 3.14 needs the `zstandard` module for the build (I used a venv with `scons` + `zstandard`)
+	  - The clone/venv I started in Claude's scratchpad is temporary — clone your own fork instead
 - [ ] Fix both branches (on master the explicit `remove` is redundant *and* unsafe); check `_new`'s owner cleanup for double-free
 - [ ] Add a regression test under `modules/gdscript/tests/scripts/runtime/errors/`
 - [ ] Minimize the repro, file the issue (4.7.2 + master), open the PR

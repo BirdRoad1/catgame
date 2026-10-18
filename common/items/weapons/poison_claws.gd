@@ -3,6 +3,7 @@ extends Item
 
 func _init():
 	display_name = "Poison Claws"
+	rarity = Rarity.UNCOMMON
 	description = "Drips with something nasty."
 	slot = Slot.WEAPON
 	attack_bonus = 1

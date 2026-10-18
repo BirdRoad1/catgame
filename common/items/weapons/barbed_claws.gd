@@ -3,6 +3,7 @@ extends Item
 
 func _init():
 	display_name = "Barbed Claws"
+	rarity = Rarity.EPIC
 	description = "Hooks in and doesn't let go."
 	slot = Slot.WEAPON
 	attack_bonus = 7

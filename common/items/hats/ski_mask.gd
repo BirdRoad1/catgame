@@ -3,6 +3,7 @@ extends Item
 
 func _init():
 	display_name = "Ski Mask"
+	rarity = Rarity.UNCOMMON
 	description = "Suspicious."
 	slot = Slot.HAT
 	attack_bonus = 3

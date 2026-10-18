@@ -5,6 +5,10 @@ extends RefCounted
 ## Subclass it and set the fields in _init(), like monsters do.
 
 enum Slot { NONE, HAT, COLLAR, ARMOR, WEAPON, TRINKET }
+## How strong the item is. Rarer items drop less often (see LootTable)
+enum Rarity { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY }
+
+const RARITY_NAMES: PackedStringArray = ["Common", "Uncommon", "Rare", "Epic", "Legendary"]
 
 var display_name: String
 var description: String
@@ -12,6 +16,7 @@ var description: String
 var icon: Texture2D
 ## Which equipment slot this goes in. NONE means it can't be equipped
 var slot := Slot.NONE
+var rarity := Rarity.COMMON
 ## Bonuses while equipped
 var attack_bonus := 0
 var max_hp_bonus := 0
@@ -26,6 +31,10 @@ var regen_per_turn := 0
 var required_form := 0
 ## Consumables are used up by use()
 var consumable := false
+
+
+func get_rarity_name() -> String:
+	return RARITY_NAMES[rarity]
 
 
 func is_equippable() -> bool:

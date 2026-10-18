@@ -65,8 +65,12 @@ func pass_out() -> void:
 
 	movement_controller.process_mode = Node.PROCESS_MODE_DISABLED
 	movement_controller.visible = false
-	owner.add_child(PassOutScene.instantiate())
+	var pass_out_screen = PassOutScene.instantiate()
+	pass_out_screen.game_over = Game.player.get_caught()
+	owner.add_child(pass_out_screen)
 
 
 func _update_label() -> void:
-	turns_label.text = "Turns left: %d" % maxi(Game.player.turns_left, 0)
+	turns_label.text = "Day %d  |  Turns left: %d  |  Caught: %d/%d" % [
+		Game.player.day, maxi(Game.player.turns_left, 0),
+		Game.player.times_caught, Player.MAX_CATCHES]
