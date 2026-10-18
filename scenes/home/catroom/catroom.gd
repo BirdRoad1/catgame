@@ -7,8 +7,6 @@ extends Control
 @onready var message: Label = %Message
 
 const DUNGEON_SCENE := "res://scenes/dungeon/dungeon.tscn"
-## Played instead of going straight to the dungeon the first time
-const BIRD_CHASE_SCENE := "res://scenes/bird_chase/bird_chase.tscn"
 
 ## How long to stay dark while sleeping, and how long messages stay up
 @export var sleep_time: float = 1.5
@@ -37,10 +35,6 @@ func _on_leave_pressed() -> void:
 		return
 	if Game.player.is_too_hurt_to_leave():
 		show_message("You're too hurt to go out. Get some sleep first.")
-		return
-	if not Game.player.seen_bird_chase:
-		Game.player.seen_bird_chase = true
-		get_tree().change_scene_to_file(BIRD_CHASE_SCENE)
 		return
 	get_tree().change_scene_to_file(DUNGEON_SCENE)
 

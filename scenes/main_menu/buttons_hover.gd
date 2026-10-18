@@ -13,8 +13,6 @@ func _process(delta: float) -> void:
 	
 func _on_mouse_entered() -> void:
 	label_settings.font_color = Color("96b8ebff")
-	print("Mouse is hovering over the UI element!")
 
 func _on_mouse_exited() -> void:
 	label_settings.font_color = old_font_color
-	print("Mouse left the UI element.")

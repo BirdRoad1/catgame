@@ -134,6 +134,8 @@ func _attack() -> void:
 		log_label.text = "You missed!"
 	else:
 		log_label.text = "You hit the %s for %d!" % [monster.display_name, damage]
+		if accuracy >= 1.0 - PERFECT_HIT_MARGIN:
+			log_label.text = "Perfect hit! " + log_label.text
 	_update_labels()
 	await _wait()
 
@@ -144,10 +146,17 @@ func _attack() -> void:
 	await _monster_turn()
 
 
+## Hits within this much of a perfect attack bar do bonus damage
+const PERFECT_HIT_MARGIN := 0.05
+const PERFECT_HIT_MULTIPLIER := 1.2
+
+
 ## How much an attack does for a given attack bar result (1.0 = perfect)
-## TODO: tune; e.g. bonus for perfect hits, minimum damage for close calls
 func _damage_for_accuracy(accuracy: float) -> int:
-	return roundi(player.get_attack_power() * accuracy)
+	var damage := player.get_attack_power() * accuracy
+	if accuracy >= 1.0 - PERFECT_HIT_MARGIN:
+		damage *= PERFECT_HIT_MULTIPLIER
+	return roundi(damage)
 
 
 func _escape() -> void:

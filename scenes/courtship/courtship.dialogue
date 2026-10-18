@@ -21,8 +21,6 @@ Lady: You're like me... aren't you?
 You: I think so?
 Narrator: She laughs.
 Lady: You look like you've been through a lot. Do you want to get some tea and tell me about it?
-# TODO art: the two of them walking off together
 Narrator: You walk beside her, tail swishing happily.
 Narrator: You walk with her into the city...
-[next=1.5] [#art=black]
 => END

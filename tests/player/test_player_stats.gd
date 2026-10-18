@@ -119,3 +119,13 @@ func test_too_hurt_to_leave_below_a_quarter_hp() -> void:
 	player.hp = 1
 	player.rest()
 	assert_false(player.is_too_hurt_to_leave(), "sleeping fixes it")
+
+
+func test_near_perfect_attacks_do_bonus_damage() -> void:
+	var battle = load("res://scenes/battle/battle.tscn").instantiate()
+	battle.player = player # attack 10
+	assert_eq(battle._damage_for_accuracy(1.0), 12, "perfect: 1.2x")
+	assert_eq(battle._damage_for_accuracy(0.95), 11, "within 5%: 9.5 * 1.2 = 11.4")
+	assert_eq(battle._damage_for_accuracy(0.94), 9, "just outside 5%: no bonus")
+	assert_eq(battle._damage_for_accuracy(0.5), 5)
+	battle.free()

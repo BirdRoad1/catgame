@@ -90,7 +90,7 @@ class Dungeon:
 		var corridor: Corridor = map.get(loc)
 
 		for i in range(4):
-			var new_vec = apply_direction(loc, i) # TODO: we compute this twice...
+			var new_vec = apply_direction(loc, i)
 			var new_corridor = Corridor.new()
 			corridor.open_dir(i) # open direction in current corridor
 			new_corridor.open_dir(Dungeon.get_opposite_dir(i)) # open opposite dir in new corridor
@@ -108,7 +108,6 @@ class Dungeon:
 		return corridor != null and corridor.is_exit
 
 	func _travel_to(loc: Vector2i):
-		# TODO: maybe store an adjacency matrix or similar
 		var corridor: Corridor = map.get(loc)
 		var dead_end_allowed = loc.distance_to(Vector2i.ZERO) > no_dead_end_radius # only allow a dead end if we have places to go
 		if (corridor == null): return false
@@ -120,7 +119,7 @@ class Dungeon:
 			moved.emit(current_location, facing)
 			return true
 
-		# create corridors around the corridor! TODO: check these, makes me feel iffy
+		# create corridors around the corridor!
 		var need_slots: Array[Direction] = []
 
 		for i in range(Direction.size()):
@@ -144,7 +143,7 @@ class Dungeon:
 			
 			for i in range(rnd):
 				var dir: Direction = need_slots[i]
-				var new_vec = apply_direction(loc, dir) # TODO: we compute this twice...
+				var new_vec = apply_direction(loc, dir)
 				var new_corridor = Corridor.new()
 				corridor.open_dir(dir) # open direction in current corridor
 				new_corridor.open_dir(Dungeon.get_opposite_dir(dir)) # open opposite dir in new corridor

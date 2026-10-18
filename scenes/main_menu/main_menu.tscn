@@ -60,6 +60,7 @@ flat = true
 script = ExtResource("1_h7a2f")
 
 [node name="Continue" type="Button" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=957499260]
+visible = false
 layout_mode = 2
 tooltip_text = "Continue"
 theme_override_colors/icon_pressed_color = Color(0.6, 0.6, 0.6, 1)

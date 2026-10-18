@@ -20,7 +20,6 @@ func _ready() -> void:
 	
 func forward():
 	dungeon.move_forward()
-	print("FORWARD")
 func left():
 	dungeon.turn_left()
 	pass

@@ -58,8 +58,6 @@ var turns_left := base_agility * TURNS_PER_AGILITY
 var xp := 0
 var form := Form.FULL_CAT
 var day := 1
-## Whether the bird chase cutscene has played (it leads to the dungeon the first time)
-var seen_bird_chase := false
 ## Set the first time the Falcon is beaten, which plays the courtship cutscene
 var beaten_boss := false
 var times_caught := 0

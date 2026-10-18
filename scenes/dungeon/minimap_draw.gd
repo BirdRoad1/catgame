@@ -32,7 +32,6 @@ func draw_centered(x: float, y: float, radius: float, color: Color):
 	draw_rect(Rect2(x - radius/2.0, y - radius/2.0, radius, radius), color)
 
 func _draw() -> void:
-	print("REDRAW MINI")
 	if dungeon == null:
 		return
 		

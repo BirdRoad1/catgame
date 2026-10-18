@@ -23,7 +23,6 @@ func get_relevant_directions():
 # Based on the direction, 
 func get_relevant_image() -> Texture2D:
 	var dirs = get_relevant_directions()
-	print(dirs)
 	var l = 'y' if dirs[0] else 'n'
 	var c = 'y' if dirs[1] else 'n'
 	var r = 'y' if dirs[2] else 'n'
