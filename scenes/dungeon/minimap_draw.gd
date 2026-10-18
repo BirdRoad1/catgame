@@ -5,15 +5,17 @@ const Dungeon = DungeonScript.Dungeon
 const Direction = DungeonScript.Direction
 const Corridor = DungeonScript.Corridor
 
-var dungeon: Dungeon
-var facing: Direction
+@onready var dungeon: Dungeon = owner.dungeon
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	dungeon.moved.connect(_on_move)
+	
+func _on_move(_location, _facing):
+	queue_redraw()
 
 func rotate(vec: Vector2i):
-	match facing:
+	match dungeon.facing:
 		Direction.NORTH:
 			return vec
 		Direction.EAST:
@@ -27,6 +29,7 @@ func draw_centered(x: float, y: float, radius: float, color: Color):
 	draw_rect(Rect2(x - radius/2.0, y - radius/2.0, radius, radius), color)
 
 func _draw() -> void:
+	print("REDRAW MINI")
 	if dungeon == null:
 		return
 		
@@ -66,11 +69,7 @@ func _draw() -> void:
 							draw_centered(origin.x + adj_rotated.x, origin.y + adj_rotated.y, 10, color)
 	draw_rect(Rect2(origin.x - 5, origin.y - 5, 10, 10), Color("red"))
 
-func refresh(dung: Dungeon, fac: Direction):
-	dungeon = dung # TODO: this aint great
-	facing = fac # TODO: neither is this
-	queue_redraw()
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+
 	pass

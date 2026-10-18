@@ -23,6 +23,12 @@ class Dungeon:
 	var current_location: Vector2i = Vector2i.ZERO
 	static var directions: Array[Vector2i] = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 	var frontiers = 0
+	var no_dead_end_radius = 20
+	var explored_num = 0
+	var dead_ends = 0
+	var facing: Direction = Direction.NORTH
+	
+	signal moved(location: Vector2i, facing: Direction)
 	
 	func _init() -> void:
 		var initial_corridor = Corridor.new()
@@ -32,6 +38,19 @@ class Dungeon:
 
 	static func get_opposite_dir(direction: Direction) -> Direction:
 		return ((direction + 2) % 4) as Direction
+
+	func face(dir: Direction):
+		facing = dir
+		moved.emit(current_location, facing)
+
+	func turn_left():
+		face(posmod(facing - 1, 4))
+
+	func turn_right():
+		face(posmod(facing + 1, 4))
+
+	func move_forward():
+		move_direction(facing)
 
 	func has_corridor(loc: Vector2i):
 		return map.has(loc)
@@ -45,6 +64,9 @@ class Dungeon:
 	func move_direction(dir: Direction):
 		var new_pos = self.current_location + self.directions[dir]
 		if new_pos == null:
+			return false
+			
+		if !can_move_direction(dir):
 			return false
 
 		return self._travel_to(new_pos)
@@ -76,41 +98,52 @@ class Dungeon:
 	func _travel_to(loc: Vector2i):
 		# TODO: maybe store an adjacency matrix or similar
 		var corridor: Corridor = map.get(loc)
-		var dead_end_allowed = frontiers > 3 # only allow a dead end if we have places to go
+		var dead_end_allowed = loc.distance_to(Vector2i.ZERO) > no_dead_end_radius # only allow a dead end if we have places to go
 		if (corridor == null): return false
+		
 
 		self.current_location = loc
+
 		if corridor.did_travel:
+			moved.emit(current_location, facing)
 			return true
 
 		# create corridors around the corridor! TODO: check these, makes me feel iffy
-		var dirs: Array[Direction] = [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
 		var need_slots: Array[Direction] = []
 
-		for i in dirs.size():
-			var dir: Direction = dirs[i]
+		for i in range(Direction.size()):
+			var dir: Direction = i
 			var new_vec = apply_direction(loc, dir)
 			if !has_corridor(new_vec):
 				need_slots.append(dir)
 		need_slots.shuffle()
-
-		# generate random between 0 (dead end) or 1 through 4 (all directions open)
-		var rnd = randi_range(0 if dead_end_allowed else 1, 4)
-
-		# limit openings to the amount possible
-		var actual_qty = min(rnd, need_slots.size())
 		
-		for i in range(actual_qty):
-			var dir: Direction = need_slots[i]
-			var new_vec = apply_direction(loc, dir) # TODO: we compute this twice...
-			var new_corridor = Corridor.new()
-			corridor.open_dir(dir) # open direction in current corridor
-			new_corridor.open_dir(Dungeon.get_opposite_dir(dir)) # open opposite dir in new corridor
-			map.set(new_vec, new_corridor)
-			frontiers += 1
+		# pick some slots and add adjacent cells
+		if !need_slots.is_empty():
+			# generate random between 0 (dead end) or 1 through 4 (all directions open)
+			var rnd = randi_range(0 if dead_end_allowed else 1, need_slots.size())
+
+			#if rnd == 0 && randf() < 0.25:
+				#rnd = randi_range(1, need_slots.size())
+
+			if rnd == 0:
+				dead_ends += 1
+			
+			for i in range(rnd):
+				var dir: Direction = need_slots[i]
+				var new_vec = apply_direction(loc, dir) # TODO: we compute this twice...
+				var new_corridor = Corridor.new()
+				corridor.open_dir(dir) # open direction in current corridor
+				new_corridor.open_dir(Dungeon.get_opposite_dir(dir)) # open opposite dir in new corridor
+				map.set(new_vec, new_corridor)
+				frontiers += 1
 		
 		corridor.did_travel = true
 		frontiers -= 1
+		explored_num += 1
+		no_dead_end_radius = 20 + 0.8 * sqrt(explored_num);
+
+		moved.emit(current_location, facing)
 
 		return true
 

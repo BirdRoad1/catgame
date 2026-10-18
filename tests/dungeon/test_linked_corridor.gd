@@ -226,3 +226,4 @@ func test_long_walk() -> void:
 	assert_eq(problems.size(), 0)
 	dungeon.dump_map(10)
 	print(dungeon.frontiers)
+	print("DEAD ENDS:" + str(1.0 * dungeon.dead_ends/dungeon.explored_num))

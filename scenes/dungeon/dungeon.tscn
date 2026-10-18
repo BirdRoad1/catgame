@@ -3,9 +3,14 @@
 [ext_resource type="Script" uid="uid://c2kjh6855sbo4" path="res://scenes/dungeon/dungeon_system.gd" id="1_pf7w1"]
 [ext_resource type="Texture2D" uid="uid://bauxa62grg02c" path="res://scenes/dungeon/art/corrodor/yyy.png" id="2_sub6p"]
 [ext_resource type="Script" uid="uid://gd6rpilyhf38" path="res://scenes/dungeon/minimap_draw.gd" id="3_4f38h"]
+[ext_resource type="Texture2D" uid="uid://bmtwst52tbpbn" path="res://scenes/dungeon/art/move_btns/Forwards.png" id="4_bsb75"]
+[ext_resource type="Script" uid="uid://xi800qisu1f4" path="res://scenes/dungeon/movement_controller.gd" id="4_h6dl1"]
+[ext_resource type="Texture2D" uid="uid://ca0htiri62tf7" path="res://scenes/dungeon/art/move_btns/Left.png" id="5_h6dl1"]
+[ext_resource type="Texture2D" uid="uid://n3csgpgsrdwg" path="res://scenes/dungeon/art/move_btns/Right.png" id="6_jxre4"]
+[ext_resource type="Texture2D" uid="uid://djkqcmrsbdxi4" path="res://scenes/dungeon/art/move_btns/Turnaround.png" id="7_rwayf"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_dgfsc"]
-font_size = 60
+font_size = 40
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sub6p"]
 bg_color = Color(0, 0, 0, 1)
@@ -33,8 +38,10 @@ texture = ExtResource("2_sub6p")
 
 [node name="Coords" type="Label" parent="." unique_id=1606647326]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 112.0
+offset_bottom = 75.0
 text = "(0, 0)"
 label_settings = SubResource("LabelSettings_dgfsc")
 
@@ -53,3 +60,48 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_sub6p")
 [node name="MinimapDraw" type="Control" parent="Minimap" unique_id=1378199585]
 layout_mode = 2
 script = ExtResource("3_4f38h")
+
+[node name="MovementController" type="VBoxContainer" parent="." unique_id=1360922080 node_paths=PackedStringArray("forward_btn", "turnaround_btn", "left_btn", "right_btn")]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+offset_transform_position = Vector2(-50, -50)
+script = ExtResource("4_h6dl1")
+forward_btn = NodePath("Forwards")
+turnaround_btn = NodePath("Turnaround")
+left_btn = NodePath("HBoxContainer/Left")
+right_btn = NodePath("HBoxContainer/Right")
+metadata/movement_controller = false
+
+[node name="Forwards" type="Button" parent="MovementController" unique_id=2013391206]
+layout_mode = 2
+size_flags_horizontal = 4
+icon = ExtResource("4_bsb75")
+flat = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MovementController" unique_id=819125996]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Left" type="Button" parent="MovementController/HBoxContainer" unique_id=1421445250]
+layout_mode = 2
+icon = ExtResource("5_h6dl1")
+flat = true
+
+[node name="Right" type="Button" parent="MovementController/HBoxContainer" unique_id=451375233]
+layout_mode = 2
+icon = ExtResource("6_jxre4")
+flat = true
+
+[node name="Turnaround" type="Button" parent="MovementController" unique_id=538589321]
+layout_mode = 2
+size_flags_horizontal = 4
+icon = ExtResource("7_rwayf")
+flat = true
