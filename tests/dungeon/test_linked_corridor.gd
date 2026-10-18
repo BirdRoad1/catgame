@@ -1,9 +1,9 @@
 extends "res://tests/test_case.gd"
-## Tests for LinkedCorridor in scenes/dungeon/dungeon_system.gd.
+## Tests for Corridor in scenes/dungeon/dungeon_system.gd.
 ## Inner classes and enums are reached through the script, no scene or node needed.
 
-const DungeonSystem = preload("res://scenes/dungeon/dungeon_system.gd")
-const LinkedCorridor = DungeonSystem.Corridor
+const DungeonSystem = preload("res://scenes/dungeon/dungeon.gd")
+const Corridor = DungeonSystem.Corridor
 const Dungeon = DungeonSystem.Dungeon
 const Direction = DungeonSystem.Direction
 
@@ -13,7 +13,7 @@ var corridor
 func before_each() -> void:
 	# Fixed seed so random generation gives the same result every run
 	seed(1723487)
-	corridor = LinkedCorridor.new()
+	corridor = Corridor.new()
 
 
 # --- Example: shows the pattern, and checks the runner works ---
@@ -33,7 +33,7 @@ func before_each() -> void:
 
 func get_first_direction(dungeon: Dungeon):
 	for direction in range(4):
-		var adjacent_corridor: LinkedCorridor = dungeon.get_adjacent_corridor(direction)
+		var adjacent_corridor: Corridor = dungeon.get_adjacent_corridor(direction)
 		if dungeon.can_move_direction(direction) && !adjacent_corridor.did_travel:
 			return direction
 	for direction in range(4):
@@ -44,7 +44,7 @@ func get_first_direction(dungeon: Dungeon):
 ## First open direction leading to an untravelled corridor, or null.
 func get_unvisited_direction(dungeon: Dungeon):
 	for direction in range(4):
-		var adjacent_corridor: LinkedCorridor = dungeon.get_adjacent_corridor(direction)
+		var adjacent_corridor: Corridor = dungeon.get_adjacent_corridor(direction)
 		if dungeon.can_move_direction(direction) && adjacent_corridor != null && !adjacent_corridor.did_travel:
 			return direction
 	return null
@@ -86,13 +86,13 @@ func count_untravelled(dungeon: Dungeon) -> int:
 func find_inconsistencies(dungeon: Dungeon) -> Array[String]:
 	var problems: Array[String] = []
 	for loc in dungeon.map:
-		var c: LinkedCorridor = dungeon.map[loc]
+		var c: Corridor = dungeon.map[loc]
 		if c.did_travel && c.open_directions.is_empty():
 			problems.append("%s travelled but has no exits (dead end)" % loc)
 		for dir in range(4):
 			var n_loc = dungeon.apply_direction(loc, dir)
-			var n: LinkedCorridor = dungeon.map.get(n_loc)
-			var opp = DungeonSystem.get_opposite_dir(dir)
+			var n: Corridor = dungeon.map.get(n_loc)
+			var opp = Dungeon.get_opposite_dir(dir)
 			if c.can_move(dir):
 				if n == null:
 					problems.append("%s open %d but no corridor at %s" % [loc, dir, n_loc])
@@ -196,7 +196,7 @@ func test_long_walk() -> void:
 		if path.is_empty():
 			break # back at start with nothing unvisited: the dungeon ran out
 
-		var back = DungeonSystem.get_opposite_dir(path.pop_back())
+		var back = Dungeon.get_opposite_dir(path.pop_back())
 		if !dungeon.move_direction(back):
 			print("Failed to backtrack ", back, " at ", dungeon.current_location)
 			failed = true
@@ -209,7 +209,7 @@ func test_long_walk() -> void:
 
 	# Walk back to start so backtracking itself gets verified.
 	while !path.is_empty():
-		var back = DungeonSystem.get_opposite_dir(path.pop_back())
+		var back = Dungeon.get_opposite_dir(path.pop_back())
 		if !dungeon.move_direction(back):
 			print("Failed to backtrack ", back, " at ", dungeon.current_location)
 			failed = true

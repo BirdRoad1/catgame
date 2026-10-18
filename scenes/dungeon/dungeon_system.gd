@@ -1,154 +1,78 @@
-extends Node2D
-class_name DungeonSystem
+extends Control
 
-enum Direction {
-	NORTH = 0,
-	EAST = 1,
-	SOUTH = 2,
-	WEST = 3
-}
+const DungeonScript = preload("res://scenes/dungeon/dungeon.gd")
+const Dungeon = DungeonScript.Dungeon
+const Direction = DungeonScript.Direction
 
-## NORTH <-> SOUTH, EAST <-> WEST. Opposites are always 2 apart in the enum.
-static func get_opposite_dir(direction: Direction) -> Direction:
-	return ((direction + 2) % 4) as Direction
+@export var corridor_img: TextureRect
+@export var coords: Label
+@export var minimap_draw: Control
 
-class Corridor:
-	var open_directions: Array[Direction] = []
-	var did_travel = false
+var facing: Direction = Direction.NORTH
+var dungeon = Dungeon.new()
 
-	func can_move(dir: Direction):
-		return open_directions.has(dir)
+func face(dir: Direction):
+	self.facing = dir
 
-	func open_dir(dir: Direction):
-		if open_directions.has(dir): return
-		open_directions.append(dir)
-		
-class Dungeon:
-	var map: Dictionary[Vector2i, Corridor] = {}
-	var current_location: Vector2i = Vector2i.ZERO
-	static var directions: Array[Vector2i] = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
-	var frontiers = 0
-	
-	func _init() -> void:
-		var initial_corridor = Corridor.new()
-		map.set(Vector2i.ZERO, initial_corridor)
-		self._travel_to(Vector2i.ZERO)
+func turn_left():
+	face(posmod(facing - 1, 4))
 
-	func has_corridor(loc: Vector2i):
-		return map.has(loc)
+func turn_right():
+	face(posmod(facing + 1, 4))
 
-	func dir_to_vec(dir: Direction):
-		return directions[dir]
+func get_relevant_directions():
+	var left = posmod(facing - 1, 4)
+	var center = facing
+	var right = posmod(facing + 1, 4)
 
-	func apply_direction(vec: Vector2i, dir: Direction):
-		return vec + dir_to_vec(dir)
+	print("LEFT:")
+	print(left)
+	print(dungeon.can_move_direction(left))
+	return [dungeon.can_move_direction(left), dungeon.can_move_direction(center), dungeon.can_move_direction(right)]
 
-	func move_direction(dir: Direction):
-		var new_pos = self.current_location + self.directions[dir]
-		if new_pos == null:
-			return false
+# Based on the direction, 
+func get_relevant_image() -> Texture2D:
+	var dirs = get_relevant_directions()
+	print(dirs)
+	var l = 'y' if dirs[0] else 'n'
+	var c = 'y' if dirs[1] else 'n'
+	var r = 'y' if dirs[2] else 'n'
 
-		return self._travel_to(new_pos)
+	var title = l + c + r + '.png'
 
-	func can_move_direction(dir: Direction):		
-		var corridor = self.map.get(self.current_location)
-		return corridor.can_move(dir)
+	return load("res://scenes/dungeon/art/corrodor/" + title) as Texture2D
 
-	func get_current_corridor():
-		return map.get(self.current_location)
 
-	func get_adjacent_corridor(dir: Direction):
-		return self.map.get(self.apply_direction(self.current_location, dir))
-	
-	func _travel_to(loc: Vector2i):
-		# TODO: maybe store an adjacency matrix or similar
-		var corridor: Corridor = map.get(loc)
-		var dead_end_allowed = frontiers > 3 # only allow a dead end if we have places to go
-		if (corridor == null): return false
-
-		self.current_location = loc
-		if corridor.did_travel:
-			return true
-
-		# create corridors around the corridor! TODO: check these, makes me feel iffy
-		var dirs: Array[Direction] = [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
-		var need_slots: Array[Direction] = []
-
-		for i in dirs.size():
-			var dir: Direction = dirs[i]
-			var new_vec = apply_direction(loc, dir)
-			if !has_corridor(new_vec):
-				need_slots.append(dir)
-		need_slots.shuffle()
-
-		# generate random between 0 (dead end) or 1 through 4 (all directions open)
-		var rnd = randi_range(0 if dead_end_allowed else 1, 4)
-
-		# limit openings to the amount possible
-		var actual_qty = min(rnd, need_slots.size())
-		
-		for i in range(actual_qty):
-			var dir: Direction = need_slots[i]
-			var new_vec = apply_direction(loc, dir) # TODO: we compute this twice...
-			var new_corridor = Corridor.new()
-			corridor.open_dir(dir) # open direction in current corridor
-			new_corridor.open_dir(DungeonSystem.get_opposite_dir(dir)) # open opposite dir in new corridor
-			map.set(new_vec, new_corridor)
-			frontiers += 1
-		
-		corridor.did_travel = true
-		frontiers -= 1
-
-		return true
-
-	func dump_current(radius: int = 4):
-		var corridor: Corridor = map.get(current_location)
-		print("--- Current corridor " + str(current_location) + " (travelled: " + str(corridor.did_travel) + ") ---")
-		for dir in Direction.values():
-			var state = "wall"
-			if corridor.can_move(dir):
-				var neighbour: Corridor = map.get(apply_direction(current_location, dir))
-				state = "open (visited)" if neighbour != null and neighbour.did_travel else "open"
-			print("  " + Direction.find_key(dir).rpad(5) + " : " + state)
-
-		dump_map(radius)
-
-	## Map of corridors within `radius` of the current one.
-	## @ = you, S = start (0, 0), o = travelled, + = not travelled yet, blank = nothing
-	## - and | = open link, ? = only one side says it's open
-	func dump_map(radius: int = 4):
-		for y in range(current_location.y - radius, current_location.y + radius + 1):
-			var row = ""
-			var below = ""
-			for x in range(current_location.x - radius, current_location.x + radius + 1):
-				var loc = Vector2i(x, y)
-				var c: Corridor = map.get(loc)
-				if loc == current_location: row += "@"
-				elif loc == Vector2i.ZERO: row += "S"
-				elif c == null: row += " "
-				elif c.did_travel: row += "o"
-				else: row += "+"
-				row += _link_char(loc, Direction.EAST, "-")
-				below += _link_char(loc, Direction.SOUTH, "|") + " "
-			print("  : " + row)
-			if y < current_location.y + radius:
-				print("  : " + below)
-
-	func _link_char(loc: Vector2i, dir: Direction, open_char: String) -> String:
-		var a: Corridor = map.get(loc)
-		var b: Corridor = map.get(apply_direction(loc, dir))
-		var a_open = a != null and a.can_move(dir)
-		var b_open = b != null and b.can_move(DungeonSystem.get_opposite_dir(dir))
-		if a_open and b_open: return open_char
-		if a_open or b_open: return "?"
-		return " "
+func get_unvisited_direction():
+	for direction in range(4):
+		var adjacent_corridor = dungeon.get_adjacent_corridor(direction)
+		if dungeon.can_move_direction(direction) && adjacent_corridor != null && !adjacent_corridor.did_travel:
+			return direction
+	return null
 
 
 # Called when the node enters the scene tree for the first time.
+## Depth-first backtracking walk: unvisited corridors first, retrace the path when stuck.
 func _ready() -> void:
-	var dungeon = Dungeon.new()
-	
+	var path: Array[int] = [] # directions taken, popped to backtrack
+	corridor_img.texture = get_relevant_image()
 
+	for i in 1000:
+		await get_tree().create_timer(1/5.0).timeout
+
+		var dir = get_unvisited_direction()
+		if dir != null:
+			path.append(dir)
+		elif path.is_empty():
+			break # back at start with nothing unvisited
+		else:
+			dir = Dungeon.get_opposite_dir(path.pop_back())
+
+		face(dir)
+		dungeon.move_direction(dir)
+		minimap_draw.refresh(dungeon)
+		coords.text = "(" + str(dungeon.current_location.x) + ", " + str(dungeon.current_location.y) + ")" 
+		corridor_img.texture = get_relevant_image()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

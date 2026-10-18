@@ -1,6 +1,55 @@
 [gd_scene format=3 uid="uid://ddm88c1anovfe"]
 
-[ext_resource type="Script" uid="uid://pdshcnqa1cc6" path="res://scenes/dungeon/dungeon_system.gd" id="1_pf7w1"]
+[ext_resource type="Script" uid="uid://c2kjh6855sbo4" path="res://scenes/dungeon/dungeon_system.gd" id="1_pf7w1"]
+[ext_resource type="Texture2D" uid="uid://bauxa62grg02c" path="res://scenes/dungeon/art/corrodor/yyy.png" id="2_sub6p"]
+[ext_resource type="Script" uid="uid://gd6rpilyhf38" path="res://scenes/dungeon/minimap_draw.gd" id="3_4f38h"]
 
-[node name="Dungeon" type="Node2D" unique_id=1724582049]
+[sub_resource type="LabelSettings" id="LabelSettings_dgfsc"]
+font_size = 60
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sub6p"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="Dungeon" type="Control" unique_id=1724582049 node_paths=PackedStringArray("corridor_img", "coords", "minimap_draw")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_pf7w1")
+corridor_img = NodePath("TextureRect")
+coords = NodePath("Coords")
+minimap_draw = NodePath("Minimap/MinimapDraw")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=323287060]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_sub6p")
+
+[node name="Coords" type="Label" parent="." unique_id=1606647326]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "(0, 0)"
+label_settings = SubResource("LabelSettings_dgfsc")
+
+[node name="Minimap" type="PanelContainer" parent="." unique_id=2119236847]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_bottom = 200.0
+grow_horizontal = 0
+offset_transform_position = Vector2(-20, -20)
+theme_override_styles/panel = SubResource("StyleBoxFlat_sub6p")
+
+[node name="MinimapDraw" type="Control" parent="Minimap" unique_id=1378199585]
+layout_mode = 2
+script = ExtResource("3_4f38h")
