@@ -1,0 +1,188 @@
+[gd_scene format=3 uid="uid://bv0u58kw6xt2p"]
+
+[ext_resource type="Script" uid="uid://cj2l7frc4jksf" path="res://scenes/battle/battle.gd" id="1_battle"]
+[ext_resource type="Texture2D" uid="uid://dufglug4e4ayr" path="res://scenes/battle/art/btns/FightButton.png" id="2_fight"]
+[ext_resource type="Texture2D" uid="uid://b2cihymavqce7" path="res://scenes/battle/art/btns/EscapeButton.png" id="3_escape"]
+[ext_resource type="Texture2D" uid="uid://dbysae5h74x28" path="res://scenes/battle/art/btns/AttackButton.png" id="4_attack"]
+[ext_resource type="Texture2D" uid="uid://cb1q30uyy20ot" path="res://scenes/battle/art/btns/BackButton.png" id="5_back"]
+[ext_resource type="Script" uid="uid://bbxu3agg73x2o" path="res://common/ui/hp_bar.gd" id="6_hpbar"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_big"]
+font_size = 36
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 20.0
+content_margin_top = 14.0
+content_margin_right = 20.0
+content_margin_bottom = 14.0
+bg_color = Color(0.15, 0.15, 0.18, 0.35)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="LabelSettings" id="LabelSettings_small"]
+font_size = 28
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Battle" type="Control" unique_id=712037296 node_paths=PackedStringArray("monster_art", "monster_label", "monster_hp_bar", "player_label", "player_hp_bar", "log_label", "main_menu", "fight_menu", "fight_btn", "escape_btn", "attack_btn", "back_btn")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_battle")
+monster_art = NodePath("MonsterBox/MonsterArt")
+monster_label = NodePath("MonsterBox/MonsterLabel")
+monster_hp_bar = NodePath("MonsterBox/MonsterHpBar")
+player_label = NodePath("PlayerPanel/PlayerItems/PlayerLabel")
+player_hp_bar = NodePath("PlayerPanel/PlayerItems/PlayerHpBar")
+log_label = NodePath("LogPanel/LogLabel")
+main_menu = NodePath("Menus/MainMenu")
+fight_menu = NodePath("Menus/FightMenu")
+fight_btn = NodePath("Menus/MainMenu/Fight")
+escape_btn = NodePath("Menus/MainMenu/Escape")
+attack_btn = NodePath("Menus/FightMenu/Attack")
+back_btn = NodePath("Menus/FightMenu/Back")
+
+[node name="MonsterBox" type="VBoxContainer" parent="." unique_id=1653850519]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -260.0
+offset_right = 200.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="MonsterLabel" type="Label" parent="MonsterBox" unique_id=1031185515]
+layout_mode = 2
+text = "Monster 0/0"
+label_settings = SubResource("LabelSettings_big")
+horizontal_alignment = 1
+
+[node name="MonsterHpBar" type="Control" parent="MonsterBox" unique_id=1407198387]
+custom_minimum_size = Vector2(280, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("6_hpbar")
+
+[node name="MonsterArt" type="TextureRect" parent="MonsterBox" unique_id=606363117]
+texture_filter = 1
+custom_minimum_size = Vector2(320, 320)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LogPanel" type="PanelContainer" parent="." unique_id=1235904968]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -110.0
+offset_right = 200.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="LogLabel" type="Label" parent="LogPanel" unique_id=169726368]
+layout_mode = 2
+text = "A monster appears!"
+label_settings = SubResource("LabelSettings_small")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="PlayerPanel" type="PanelContainer" parent="." unique_id=1726554946]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -150.0
+offset_right = 380.0
+offset_bottom = -40.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="PlayerItems" type="VBoxContainer" parent="PlayerPanel" unique_id=2072438443]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayerLabel" type="Label" parent="PlayerPanel/PlayerItems" unique_id=814207374]
+layout_mode = 2
+text = "You 0/0"
+label_settings = SubResource("LabelSettings_small")
+
+[node name="PlayerHpBar" type="Control" parent="PlayerPanel/PlayerItems" unique_id=1573728484]
+custom_minimum_size = Vector2(300, 28)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("6_hpbar")
+
+[node name="Menus" type="VBoxContainer" parent="." unique_id=376117175]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -180.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+alignment = 2
+
+[node name="MainMenu" type="VBoxContainer" parent="Menus" unique_id=1029619723]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Fight" type="Button" parent="Menus/MainMenu" unique_id=1152711265]
+layout_mode = 2
+size_flags_horizontal = 8
+icon = ExtResource("2_fight")
+flat = true
+
+[node name="Escape" type="Button" parent="Menus/MainMenu" unique_id=1098224757]
+layout_mode = 2
+size_flags_horizontal = 8
+icon = ExtResource("3_escape")
+flat = true
+
+[node name="FightMenu" type="VBoxContainer" parent="Menus" unique_id=1185886641]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Attack" type="Button" parent="Menus/FightMenu" unique_id=1880533294]
+layout_mode = 2
+size_flags_horizontal = 8
+icon = ExtResource("4_attack")
+flat = true
+
+[node name="Back" type="Button" parent="Menus/FightMenu" unique_id=1029800262]
+layout_mode = 2
+size_flags_horizontal = 8
+icon = ExtResource("5_back")
+flat = true

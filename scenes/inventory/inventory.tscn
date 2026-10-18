@@ -1,0 +1,76 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/inventory/inventory.gd" id="1_inv"]
+[ext_resource type="Texture2D" path="res://scenes/inventory/art/inventory.png" id="2_art"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_stats"]
+font_size = 10
+font_color = Color(0.1, 0.1, 0.1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_info"]
+font_size = 8
+font_color = Color(0.2, 0.18, 0.16, 1)
+
+[node name="Inventory" type="Control" node_paths=PackedStringArray("frame", "stats_label", "item_name_label", "item_info_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_inv")
+frame = NodePath("Frame")
+stats_label = NodePath("Frame/StatsLabel")
+item_name_label = NodePath("Frame/ItemNameLabel")
+item_info_label = NodePath("Frame/ItemInfoLabel")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="Frame" type="Control" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 2
+
+[node name="Background" type="TextureRect" parent="Frame"]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 2
+texture = ExtResource("2_art")
+
+[node name="StatsLabel" type="Label" parent="Frame"]
+layout_mode = 0
+offset_left = 236.0
+offset_top = 40.0
+offset_right = 310.0
+offset_bottom = 102.0
+text = "HP 0/0
+Attack 0"
+label_settings = SubResource("LabelSettings_info")
+
+[node name="ItemNameLabel" type="Label" parent="Frame"]
+layout_mode = 0
+offset_left = 236.0
+offset_top = 104.0
+offset_right = 310.0
+offset_bottom = 117.0
+label_settings = SubResource("LabelSettings_stats")
+autowrap_mode = 3
+
+[node name="ItemInfoLabel" type="Label" parent="Frame"]
+layout_mode = 0
+offset_left = 236.0
+offset_top = 118.0
+offset_right = 310.0
+offset_bottom = 171.0
+label_settings = SubResource("LabelSettings_info")
+autowrap_mode = 3

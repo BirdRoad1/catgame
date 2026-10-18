@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cb1q30uyy20ot"
-path="res://.godot/imported/BackButton.png-919f7c0bc89af45adc3fe8543316efdc.ctex"
+uid="uid://d01ccqxkbq2nk"
+path="res://.godot/imported/mimic_open.png-daa519f069254e17b7a05913da778e18.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/dungeon/art/btns/BackButton.png"
-dest_files=["res://.godot/imported/BackButton.png-919f7c0bc89af45adc3fe8543316efdc.ctex"]
+source_file="res://common/monsters/art/mimic_open.png"
+dest_files=["res://.godot/imported/mimic_open.png-daa519f069254e17b7a05913da778e18.ctex"]
 
 [params]
 

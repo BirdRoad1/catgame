@@ -4,6 +4,12 @@
 [ext_resource type="Texture2D" uid="uid://bhuisodqibw3x" path="res://scenes/home/catroom/art/catroom.png" id="2_vtafx"]
 [ext_resource type="Script" uid="uid://cv4i6rdafdlyo" path="res://scenes/home/catroom/leave_btn.gd" id="3_dek0r"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_msg"]
+font_size = 32
+font_color = Color(0, 0, 0, 1)
+outline_size = 8
+outline_color = Color(1, 1, 1, 1)
+
 [node name="CatRoom" type="Control" unique_id=225547664]
 layout_mode = 3
 anchors_preset = 15
@@ -58,6 +64,33 @@ mouse_default_cursor_shape = 2
 flat = true
 script = ExtResource("3_dek0r")
 
+[node name="Bed" type="Button" parent="Hotspots"]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 460.0
+offset_right = 435.0
+offset_bottom = 580.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+flat = true
+
+[node name="Message" type="Label" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -90.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+label_settings = SubResource("LabelSettings_msg")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Fade" type="ColorRect" parent="." unique_id=636955933]
 unique_name_in_owner = true
 visible = false
@@ -71,3 +104,4 @@ mouse_filter = 2
 color = Color(0, 0, 0, 1)
 
 [connection signal="pressed" from="Hotspots/Leave" to="." method="_on_leave_pressed"]
+[connection signal="pressed" from="Hotspots/Bed" to="." method="_on_bed_pressed"]

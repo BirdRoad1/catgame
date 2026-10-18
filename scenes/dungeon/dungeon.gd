@@ -137,6 +137,9 @@ class Dungeon:
 				new_corridor.open_dir(Dungeon.get_opposite_dir(dir)) # open opposite dir in new corridor
 				map.set(new_vec, new_corridor)
 				frontiers += 1
+				
+				# potentially put a monster here
+				
 		
 		corridor.did_travel = true
 		frontiers -= 1

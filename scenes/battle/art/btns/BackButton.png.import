@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dufglug4e4ayr"
-path="res://.godot/imported/FightButton.png-e039ecd03dda4efe831558e222a1f918.ctex"
+uid="uid://cb1q30uyy20ot"
+path="res://.godot/imported/BackButton.png-45e403b82210b7de8ddb37599b3358b7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/dungeon/art/btns/FightButton.png"
-dest_files=["res://.godot/imported/FightButton.png-e039ecd03dda4efe831558e222a1f918.ctex"]
+source_file="res://scenes/battle/art/btns/BackButton.png"
+dest_files=["res://.godot/imported/BackButton.png-45e403b82210b7de8ddb37599b3358b7.ctex"]
 
 [params]
 

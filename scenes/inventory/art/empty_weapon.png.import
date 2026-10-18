@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dbysae5h74x28"
-path="res://.godot/imported/AttackButton.png-9145c18d9d9738be3f78ff9255bc1631.ctex"
+uid="uid://cryfrabd2thff"
+path="res://.godot/imported/empty_weapon.png-c6c6fa25a8918559585c6cbb3e79edda.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/dungeon/art/btns/AttackButton.png"
-dest_files=["res://.godot/imported/AttackButton.png-9145c18d9d9738be3f78ff9255bc1631.ctex"]
+source_file="res://scenes/inventory/art/empty_weapon.png"
+dest_files=["res://.godot/imported/empty_weapon.png-c6c6fa25a8918559585c6cbb3e79edda.ctex"]
 
 [params]
 

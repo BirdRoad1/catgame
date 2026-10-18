@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2cihymavqce7"
-path="res://.godot/imported/EscapeButton.png-a7d73506a5caaafd755b3da119d4cc6e.ctex"
+uid="uid://oc1r7a2v3ax7"
+path="res://.godot/imported/chest_open.png-92ffc8ab02a173bfae4c9f6f49f04708.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/dungeon/art/btns/EscapeButton.png"
-dest_files=["res://.godot/imported/EscapeButton.png-a7d73506a5caaafd755b3da119d4cc6e.ctex"]
+source_file="res://common/entities/art/chest_open.png"
+dest_files=["res://.godot/imported/chest_open.png-92ffc8ab02a173bfae4c9f6f49f04708.ctex"]
 
 [params]
 
